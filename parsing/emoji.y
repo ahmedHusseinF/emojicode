@@ -2,108 +2,150 @@
     #include <string>
     #include <iostream>
     extern int yylex();
+    extern int yylineno;
     int currScope = 0;
-    void yyerror(const char *err) { std::cerr<<"Parser Error: "<< err <<std::endl; }
+    void yyerror(const char *err) { std::cerr<<"Parser Error: "<< err << " at line " << yylineno <<std::endl; }
 %}
 
 /* Represents the many different ways we can access our data */
 %union {
     std::string *string;
     int token;
+    float floaty;
 }
 
 /* Define our terminal symbols (tokens). This should
    match our emoji.l lex file. We also define the node type
    they represent.
  */
-%token <string> TIDENTIFIER TINTEGER TFLOAT TCONST TIF TELSE TFLOATYPE TINTYPE TSTRINGTYPE TFOR TWHILE TDO TBOOLTYPE
-%token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL TTRUE TFALSE
-%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT TSEP
-%token <token> TPLUS TMINUS TMUL TDIV
+%token <string> TIDENTIFIER TSTRING
+%token <token> TINTEGER
+%token <floaty> TFLOAT
+
+
+%token <token> TCONST TIF TELSE TFLOATYPE TINTYPE TSTRINGTYPE TFOR TWHILE TDO TBOOLTYPE TPASS
+%token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL TTRUE TFALSE TSWITCH TDEFAULT TCASE TBREAK
+%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT TSEP TCOLON
+%token <token> TPLUS TMINUS TMUL TDIV TINC TDEC
+%token <token> TAND TOR TNOT
 
 /* Define the type of node our nonterminal symbols represent.
    The types refer to the %union declaration above.
  */
-
-%type <string> ident
+/* %type ident
 %type numeric expr
 %type program stmts
 %type stmt var_decl const_decl
-%type comparison
+%type comparison */
 
 /* Operator precedence for mathematical operators */
+%left TAND TOR TCEQ TCNE TCLT TCLE TCGT TCGE
 %left TPLUS TMINUS
-%left TMUL TDIV
+%left TMUL TDIV TINC TDEC
+
+%locations
 
 %start program
 
 %%
 
-program : stmts { ; }
-        ;
-        
-stmts : stmt { ; }
-      | stmts stmt TSEP { ; }
-      ;
+program: stmts 
+       ;
 
-stmt : var_decl TSEP
-     | const_decl TSEP
-     | if_cond
-     | if_else_cond
-     | while_loop
-     | for_loop
-     | %empty
+stmts: stmt 
+     | stmts stmt
      ;
 
-for_loop :
-           TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE stmts TRBRACE   { ; }
-         ;
+stmt: var_decl TSEP
+    | const_decl TSEP
+    | if_cond
+    | if_else_cond
+    | while_loop
+    | for_loop
+    | switch_statemnet
+    | TPASS TSEP
+    | error TSEP
+    ;
 
-while_loop : TWHILE TLPAREN expr TRPAREN TLBRACE stmts TRBRACE   { ; }
+switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE case_blocks TRBRACE
+                ;
+
+case_blocks: case_stmt
+           | case_blocks case_stmt
            ;
 
-if_cond : TIF TLPAREN expr TRPAREN TLBRACE stmts TRBRACE  { ; }
+case_stmt: TCASE values TCOLON stmts TSEP
+         | TCASE values TCOLON TBREAK TSEP
+         | TDEFAULT values TCOLON stmts TSEP
+         | TDEFAULT values TCOLON TBREAK TSEP
+         | TBREAK TSEP
+         ;
+
+
+for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE stmts TRBRACE
         ;
 
-if_else_cond : if_cond TELSE TLBRACE stmts TRBRACE        { ; }
-             ;
+while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE stmts TRBRACE
+          ;
 
-const_decl : TCONST var_type ident { ; }
-           | TCONST var_type ident TEQUAL expr { ; }
-           ;
+if_cond: TIF TLPAREN expr TRPAREN TLBRACE stmts TRBRACE
+       ;
 
-var_decl : var_type ident { ; }
-         | var_type ident TEQUAL expr { ; }
-         ;
+if_else_cond: if_cond TELSE TLBRACE stmts TRBRACE
+            ;
 
-ident : TIDENTIFIER { ; }
+const_decl: TCONST var_type TIDENTIFIER
+          | TCONST var_type TIDENTIFIER TEQUAL expr
+          ;
+
+var_decl: var_type TIDENTIFIER
+        | var_type TIDENTIFIER TEQUAL expr
+        ;
+
+
+values: TINTEGER
+      | TFLOAT
+      | TTRUE
+      | TFALSE
+      | TSTRING
       ;
 
-numeric : TINTEGER { ; }
-        | TFLOAT { ; }
-        | TTRUE   { ; }
-        | TFALSE   { ; }
+expr: expr TCEQ expr
+    | expr TCNE expr
+    | expr TCLT expr
+    | expr TCLE expr
+    | expr TCGT expr
+    | expr TCGE expr
+    | expr TAND expr
+    | expr TOR expr
+    | TNOT TLPAREN expr TRPAREN
+    | assignment
+    ;
+
+assignment: TIDENTIFIER TPLUS assignment
+          | TIDENTIFIER TMINUS assignment
+          | TIDENTIFIER TMUL assignment
+          | TIDENTIFIER TDIV assignment
+          | values TPLUS assignment
+          | values TMINUS assignment
+          | values TMUL assignment
+          | values TDIV assignment
+          | TLPAREN assignment TRPAREN
+          | TMINUS values
+          | TMINUS TIDENTIFIER
+          | values
+          | TIDENTIFIER
+          ;
+
+
+optexpr: expr
+       | %empty
+       ;
+
+var_type: TFLOATYPE
+        | TINTYPE
+        | TSTRINGTYPE
+        | TBOOLTYPE
         ;
-    
-expr : ident TEQUAL expr { ; }
-     | ident { ; }
-     | numeric  { ; }
-     | expr comparison expr { ; }
-     | TLPAREN expr TRPAREN { ; }
-     ;
-
-optexpr : expr
-        | %empty
-        ;
-
-var_type : TFLOATYPE        { ; }
-         | TINTYPE          { ; }
-         | TSTRINGTYPE      { ; }
-         | TBOOLTYPE        { ; }
-         ;
-
-comparison : TCEQ | TCNE | TCLT | TCLE | TCGT | TCGE
-           | TPLUS | TMINUS | TMUL | TDIV
-           ;
 
 %%
