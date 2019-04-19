@@ -1,3 +1,15 @@
-if ( x == y ) {
+
+
+for(;;) {
   int abc = 5;
+}
+
+
+if ( x == y ) {
+  pass;
+}
+
+switch(x){
+  case 5:
+  break;
 }
