@@ -3,8 +3,7 @@
     #include <iostream>
     extern int yylex();
     extern int yylineno;
-    int currScope = 0;
-    void yyerror(const char *err) { std::cerr<<"Parser Error: "<< err << " at line " << yylineno <<std::endl; }
+    void yyerror(const char *err) { std::cerr<<"Syntax Error: "<< err << " at line " << yylineno <<std::endl; }
 %}
 
 /* Represents the many different ways we can access our data */
@@ -23,9 +22,9 @@
 %token <floaty> TFLOAT
 
 
-%token <token> TCONST TIF TELSE TFLOATYPE TINTYPE TSTRINGTYPE TFOR TWHILE TDO TBOOLTYPE TPASS
+%token <token> TCONST TIF TELSE TFLOATYPE TINTYPE TSTRINGTYPE TFOR TWHILE TBOOLTYPE TPASS
 %token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL TTRUE TFALSE TSWITCH TDEFAULT TCASE TBREAK
-%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT TSEP TCOLON
+%token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TSEP TCOLON
 %token <token> TPLUS TMINUS TMUL TDIV TINC TDEC
 %token <token> TAND TOR TNOT
 
@@ -76,8 +75,8 @@ case_blocks: case_stmt
 
 case_stmt: TCASE values TCOLON stmts TSEP
          | TCASE values TCOLON TBREAK TSEP
-         | TDEFAULT values TCOLON stmts TSEP
-         | TDEFAULT values TCOLON TBREAK TSEP
+         | TDEFAULT TCOLON stmts TSEP
+         | TDEFAULT TCOLON TBREAK TSEP
          | TBREAK TSEP
          ;
 
@@ -133,6 +132,9 @@ assignment: TIDENTIFIER TPLUS assignment
           | TLPAREN assignment TRPAREN
           | TMINUS values
           | TMINUS TIDENTIFIER
+          | TIDENTIFIER TINC
+          | TIDENTIFIER TDEC
+          | TIDENTIFIER TEQUAL values
           | values
           | TIDENTIFIER
           ;

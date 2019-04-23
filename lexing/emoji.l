@@ -11,24 +11,23 @@ extern "C" int yywrap() { return 1; }
 %%
 
 [ \t\n]                   ;
-"const"                   return TOKEN(TCONST);
+"©"                       return TOKEN(TCONST);
 "pass"                    return TOKEN(TPASS);
-"if"                      return TOKEN(TIF);
-"else"                    return TOKEN(TELSE);
-"for"                     return TOKEN(TFOR);
-"while"                   return TOKEN(TWHILE);
-"do"                      return TOKEN(TDO);
+"↪️"                      return TOKEN(TIF);
+"🙅‍"                      return TOKEN(TELSE);
+"🔂"                      return TOKEN(TFOR);
+"🔁"                      return TOKEN(TWHILE);
 "switch"                  return TOKEN(TSWITCH);
 "break"                   return TOKEN(TBREAK);
 "case"                    return TOKEN(TCASE);
 "default"                 return TOKEN(TDEFAULT);
-"int"                     return TOKEN(TINTYPE);
-"float"                   return TOKEN(TFLOATYPE);
-"string"                  return TOKEN(TSTRINGTYPE);
-"bool"                    return TOKEN(TBOOLTYPE);
-"true"                    return TOKEN(TTRUE);
-"false"                   return TOKEN(TFALSE);
-\".\"                     {yylval.string = new std::string(yytext, yyleng); return TSTRING;}
+"🔢"                      return TOKEN(TINTYPE);
+"💯"                      return TOKEN(TFLOATYPE);
+"🔤"                      return TOKEN(TSTRINGTYPE);
+"👌"                      return TOKEN(TBOOLTYPE);
+"👍"                      return TOKEN(TTRUE);
+"👎"                      return TOKEN(TFALSE);
+\"([^\\\"]|\\.)*\"        {yylval.string = new std::string(yytext, yyleng); return TSTRING;}
 [a-zA-Z_$][a-zA-Z0-9_$]*  {yylval.string = new std::string(yytext, yyleng); return TIDENTIFIER;}
 [0-9]+.[0-9]+             {yylval.floaty = atof(yytext); return TFLOAT;}
 [0-9]+                    {yylval.token = atof(yytext); return TINTEGER;}
@@ -48,7 +47,6 @@ extern "C" int yywrap() { return 1; }
 ")"                       return TOKEN(TRPAREN);
 "{"                       return TOKEN(TLBRACE);
 "}"                       return TOKEN(TRBRACE);
-"."                       return TOKEN(TDOT);
 ","                       return TOKEN(TCOMMA);
 "++"                      return TOKEN(TINC);
 "--"                      return TOKEN(TDEC);

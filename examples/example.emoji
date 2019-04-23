@@ -1,15 +1,20 @@
 
 
-for(;;) {
-  int abc = 5;
+🔂(abc = 1; abc < 5; abc++) {
+  🔢 abc = -5;
+  🔤 str = "abbc";
 }
 
 
-if ( x == y ) {
+↪️ ( x == y ) {
   pass;
 }
 
-switch(x){
+switch (x) {
   case 5:
-  break;
+    break;
+  case 6:
+    break;
+  default:
+    break;
 }
