@@ -5,6 +5,10 @@
   🔤 str = "abbc";
 }
 
+🔂(;;) {
+  🔢 abc = -5;
+  🔤 str = "abbc";
+}
 
 ↪️ ( x == y ) {
   pass;
@@ -18,3 +22,9 @@ switch (x) {
   default:
     break;
 }
+
+🔢 func(){
+  pass;
+}
+
+func();

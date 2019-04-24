@@ -22,7 +22,7 @@
 %token <floaty> TFLOAT
 
 
-%token <token> TCONST TIF TELSE TFLOATYPE TINTYPE TSTRINGTYPE TFOR TWHILE TBOOLTYPE TPASS
+%token <token> TCONST TIF TELSE TFLOATYPE TINTYPE TSTRINGTYPE TFOR TWHILE TBOOLTYPE TPASS TVOID
 %token <token> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL TTRUE TFALSE TSWITCH TDEFAULT TCASE TBREAK
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TSEP TCOLON
 %token <token> TPLUS TMINUS TMUL TDIV TINC TDEC
@@ -62,9 +62,27 @@ stmt: var_decl TSEP
     | while_loop
     | for_loop
     | switch_statemnet
+    | func_decl
+    | func_call
     | TPASS TSEP
     | error TSEP
     ;
+
+func_decl: var_type TIDENTIFIER TLPAREN args TRPAREN TLBRACE stmts TRBRACE
+         ;
+
+args: %empty
+    | var_type
+    | args TCOMMA var_type
+    ;
+
+func_call: TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+         ;
+
+call_args: %empty
+         | expr
+         | call_args TCOMMA expr
+         ;
 
 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE case_blocks TRBRACE
                 ;
@@ -117,6 +135,7 @@ expr: expr TCEQ expr
     | expr TCGE expr
     | expr TAND expr
     | expr TOR expr
+    | func_call
     | TNOT TLPAREN expr TRPAREN
     | assignment
     ;
@@ -148,6 +167,7 @@ var_type: TFLOATYPE
         | TINTYPE
         | TSTRINGTYPE
         | TBOOLTYPE
+        | TVOID
         ;
 
 %%

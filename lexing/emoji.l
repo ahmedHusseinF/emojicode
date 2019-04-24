@@ -15,6 +15,7 @@ extern "C" int yywrap() { return 1; }
 "pass"                    return TOKEN(TPASS);
 "↪️"                      return TOKEN(TIF);
 "🙅‍"                      return TOKEN(TELSE);
+"void"                    return TOKEN(TVOID);
 "🔂"                      return TOKEN(TFOR);
 "🔁"                      return TOKEN(TWHILE);
 "switch"                  return TOKEN(TSWITCH);
