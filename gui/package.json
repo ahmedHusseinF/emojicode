@@ -1,0 +1,10 @@
+{
+  "name": "emojicode-gui",
+  "version": "0.0.1",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "monaco-editor": "^0.16.2"
+  }
+}
