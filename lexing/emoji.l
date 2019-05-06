@@ -55,6 +55,6 @@ extern "C" int yywrap() { return 1; }
 "-"                       return TOKEN(TMINUS);
 "*"                       return TOKEN(TMUL);
 "/"                       return TOKEN(TDIV);
-.                         printf("Unknown token at %s\n", yylineno); yyterminate();
+.                         printf("Unknown token at %d\n", yylineno); yyterminate();
 
 %%
