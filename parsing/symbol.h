@@ -1,30 +1,39 @@
 #pragma once
 
 #ifndef _SYMBOL_H
-#define _SYMBOL_H 1
+#define _SYMBOL_H
 
 #include <iostream>
 #include <map>
 #include <string>
 
-struct Symbol {
-  bool constant;
-  int scope;  // 0 for global
-  std::string id;
-  std::string value;
+enum Types { INT, STRING, FLOAT };
+
+enum Status {
+  SUCCESS,
+  DUPLICATE,
+  FAIL,
+  TYPE_MISMATCH,
+  CONST_REDECLARATION,
+  NOT_FOUND,
 };
 
-class SymbolTable {
- private:
-  std::map<std::string, Symbol> symbols;
+typedef union value {
+  float floaty;
+  int integer;
+  std::string str;
+} Values;
 
- public:
-  SymbolTable();
-  void addIntSymbol(bool, int, int, std::string);
-  void addStringSymbol(bool, int, std::string, std::string);
-  std::string getSymbolValue(std::string);
-  void printTable();
-  ~SymbolTable();
+struct Symbol {
+  bool constant;
+  std::string name;
+  Types type;
+  Values value;
+};
+
+struct Scope {
+  std::map<std::string, Symbol> table;
+  Scope *parent;
 };
 
 #endif
