@@ -1,6 +1,9 @@
 #include <iostream>
+#include "symbol.h"
 
 extern int yyparse();
+
+Scope* curr = nullptr;
 
 int main(int argc, char** argv) {
   yyparse();
