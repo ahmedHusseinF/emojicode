@@ -200,7 +200,6 @@ optexpr: expr
 
 %%
 
-
 OPERATION_RETURN insert(int type, char* name, bool isConstant, Values value, Scope *currentTable)
 {
     cout << name<<endl;
