@@ -1,5 +1,5 @@
 #include <iostream>
-#include "symbol.h"
+#include "parsing/symbol.h"
 
 extern int yyparse();
 
