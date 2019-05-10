@@ -1,39 +1,39 @@
-#pragma once
+
 
 #ifndef _SYMBOL_H
 #define _SYMBOL_H
 
-#include <iostream>
-#include <map>
-#include <string>
+#include <unordered_map>
 
-enum Types { INT, STRING, FLOAT };
+#define INT 1
+#define STRING 2
+#define BOOLEAN 3
 
-enum Status {
-  SUCCESS,
-  DUPLICATE,
-  FAIL,
-  TYPE_MISMATCH,
-  CONST_REDECLARATION,
-  NOT_FOUND,
+enum OPERATION_RETURN {
+  SUCCESSFUL_INSERTION,
+  DUPLICATE_INSERTION,
+  FAILED_TO_INSERTION,
+
+  SUCCESSFUL_UPDATE,
+  SYMBOL_NOT_FOUND,
+  SEMANTIC_ERROR_TYPE_INCOMPATIBLE,
+  SEMANTIC_ERROR_ATTEMPT_CHANGING_CONSTANT,
 };
 
-typedef union value {
-  float floaty;
-  int integer;
-  std::string str;
+typedef union valueType {
+  int Number;
+  char *str;
 } Values;
 
 struct Symbol {
-  bool constant;
-  std::string name;
-  Types type;
+  int type;  // 1-->int, 2-->char*, 3--> boolean
+  bool isConst;
   Values value;
 };
 
 struct Scope {
-  std::map<std::string, Symbol> table;
-  Scope *parent;
+  std::unordered_map<char *, Symbol> currentLockup;
+  Scope *above;
 };
 
 #endif
