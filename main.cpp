@@ -3,10 +3,8 @@
 
 extern int yyparse();
 
-Scope* curr = nullptr;
-
 int main(int argc, char** argv) {
-  yyparse();
-  std::cout << "Finished all file" << std::endl;
-  return 0;
+  int ret = yyparse();
+  if (ret == 0) std::cout << "Finished all file" << std::endl;
+  return ret;
 }
