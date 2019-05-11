@@ -7,6 +7,8 @@
     #include <unordered_map>
     #include <utility>
     #include <typeinfo>
+    #include <stack>
+    #include <string.h>
 
     #include "../parsing/symbol.h"
     using namespace std;
@@ -19,7 +21,21 @@
 
     Scope* mainScope = nullptr;
     Scope* currentScope = nullptr;
-
+    // ////////////quadrauples/////////////
+    void push(string);
+    void gen_assign();
+    void code_generate();
+    void cond_if();
+    void body_if();
+    void else_if();
+    label_number=0;
+    std::string stack_for_quadruples[500];
+    int label[50];
+    label_top=0;
+    int top = 0;
+    int temp_reg_count = 0;
+    char temp [2]="t";
+    /////////////////////
 
     extern int yylex();
     extern int yylineno;
@@ -109,7 +125,7 @@ call_args: %empty
          | call_args TCOMMA expr
          ;
 
-var_type: TINTYPE
+var_type: TINTYPE {std::cout<<"var type"<<endl;}
         | TSTRINGTYPE
         | TBOOLTYPE
         | TVOID
@@ -147,7 +163,7 @@ const_decl: TCONST TINTYPE TIDENTIFIER
           | TCONST TBOOLTYPE TIDENTIFIER
           ;
 
-var_decl: TINTYPE TIDENTIFIER           {Values val; val.Number=0;handle_error(insert(INT, $2, false, val, currentScope));}
+var_decl: TINTYPE  {std::cout<<"var decl_tintype" << endl;} TIDENTIFIER {std::cout<<"var decl_Tidentifier"<<endl;}    { Values val; val.Number=0;handle_error(insert(INT, $3, false, val, currentScope)); }
         | TSTRINGTYPE TIDENTIFIER       {Values val; val.str="";handle_error(insert(STRING, $2, false, val, currentScope));}
         | TBOOLTYPE TIDENTIFIER         {Values val; val.Number=0;handle_error(insert(BOOLEAN, $2, false, val, currentScope));}
         ;
@@ -188,7 +204,10 @@ arithmetic: TIDENTIFIER TPLUS arithmetic
           | TIDENTIFIER
           ;
 
-assignment: TIDENTIFIER TEQUAL TSTRING          {Values val; val.str = $3; update($1, STRING, val, currentScope);}
+assignment: TIDENTIFIER {push($1); std::cout<<"identifier";} TEQUAL {stack_for_quadruples[++top] = "=";} TSTRING {gen_assign();}       
+            {
+               
+            }
           | TIDENTIFIER TEQUAL expr             {Values val; val.Number = $3 ? 1 : 0; update($1, BOOLEAN, val, currentScope);}
           | TIDENTIFIER TEQUAL arithmetic       {Values val; val.Number = $3; update($1, INT, val, currentScope);}
           ;
@@ -306,6 +325,183 @@ void handle_error(OPERATION_RETURN ret) {
             cerr << "Can't change a constant"<<endl;
         break;
     }
+}
+// for quadruples
+void push(string a)
+{
+    std::cout<<"pushed"<<endl;
+    stack_for_quadruples[++top] = a;
+}
+void gen_assign()
+{
+    string value = stack_for_quadruples[top];
+    string variable = stack_for_quadruples[top-2];
+    std::cout<<"MOV"<<variable << " , "<<value<<endl;
+    top-=2;
+}
+void code_generate()
+{
+    string variable1 = stack_for_quadruples[top-2];
+    string operand = stack_for_quadruples[top-1];
+    string variable2 = stack_for_quadruples[top];
+    temp[2] = (char)temp_reg_count;
+    if (operand == "+")
+    {
+        std::cout<<"ADD"<< " "<<temp << " " <<variable1<<" , "<<variable2<<endl;
+        top-=2;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "*")
+    {
+        std::cout<<"MUL"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "/")
+    {
+        std::cout<<"DIV"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "==" )
+    {
+        std::cout <<"SEQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "!=")
+    {
+        std::cout <<"SNQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "<")
+    {
+        std::cout <<"SLT"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "<=")
+    {
+        std::cout <<"SLQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == ">")
+    {
+        std::cout <<"GRT"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == ">=")
+    {
+        std::cout <<"GRQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "&&")
+    {
+        std::cout <<"AND"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "||")
+    {
+        std::cout <<"OR"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+    else if (operand == "!")
+    {
+        std::cout <<"NOT" << " " << temp<< " " <<variable1<<" , "<<variable2<<endl;
+        stack_for_quadruples[top] = temp;
+        temp_reg_count++;
+    }
+
+}
+void cond_if ()
+{
+    label_number++;
+    temp[1] = (char)temp_reg_count;
+    std::cout<<"NOT"<<" "<<temp<<" "<<stack_for_quadruples[top]<<endl;
+    std::cout<<"IF"<<" "<<temp<<" "<<"goto Label"<<" "<<label_number<<endl;
+    temp_reg_count++;
+    label[++label_top] = label_number; 
+}
+void body_if ()
+{
+    label_number++;
+    std::cout<<"goto "<<label_number<<endl;
+    std::cout<<"Label: "<<label[label_top--]<<endl;
+    label[++label_top] = label_number;
+}
+void else_if ()
+{
+    std::cout<<"Label: "<<label[label_top--];
+}
+void start_while ()
+{
+    label_number++;
+    label[++label_top] = label_number;
+    std::cout<<"Label: "<<label_number;
+}
+body_while ()
+{
+    label_number++;
+    temp[1] = (char)temp_reg_count;
+    std::cout<<"NOT "<<temp<<" , "<<stack_for_quadruples[top--]<<endl;
+    std::cout<<"IF "<<temp<<" goto Label"<<label_number<<endl;
+    temp_reg_count++;
+    label[++label_top] = label_number;
+}
+void end_while ()
+{
+    int dumy = label[label_top--];
+    std::cout<<"goto Label"<<label[label_top--]<<endl;;
+    std::cout<<"Label: "<<dumy<<endl;
+}
+cond_for ()
+{
+    label_number++;
+    label[++label_top] = label_number;
+    std::cout<<"Label: "<<label_number<<endl;
+}
+loop_for ()
+{
+    label_number++;
+    temp[1] = (char)temp_reg_count;
+    std::cout<<"NOT "<<temp<<" , "<<stack_for_quadruples[top--]<<endl;
+    std::cout<<"IF "<<temp<<" goto Label"<<label_number<<endl;
+    temp_reg_count++;
+    label[++label_top] = label_number++;
+    std::cout<<"goto Label"<<label_number<<endl;
+    label[++label_top] = label_number++;
+    std::cout<<"goto Label"<<label_number<<endl;
+    label[++label_top] = label_number; 
+}
+body_for ()
+{
+    std::cout<<"goto Label"<<label[label_top-3]<<endl;
+    std::cout<<"Label: "<<label[label_top-1]<<endl;
+}
+end_for ()
+{
+    std::cout<<"goto Label"<<label[label_top]<<endl;
+    std::cout<<"Label: "<<label[label_top-2]<<endl;
+    label_top-=4;
+}
+void array_assign ()
+{
+    temp[1] = (char)temp_reg_count;
+    std::cout<<"MOV "<<temp<<" , "<<stack_for_quadruples[top]<<endl;
+    stack_for_quadruples[top] = temp;
+    temp_reg_count++;
+    temp[1] = (char)temp_reg_count;
+    std::cout<<"MOV "<<temp<<" , "<<stack_for_quadruples[top-1]<<"["<<stack_for_quadruples[top]<<"]"<<endl;
+    top--;
+    stack_for_quadruples[top] = temp;
+    temp_reg_count++;
 }
 
 int main (void) {

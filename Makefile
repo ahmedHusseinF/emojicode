@@ -2,7 +2,7 @@ pre:
 	rm -f build/* && bison -d -o build/emoji.c parsing/emoji.y && flex -o build/lexer.c lexing/emoji.l
 
 run:
-	make pre && g++ -g -o parser.out build/emoji.c build/lexer.c 
+	make pre && g++ -std=c++11 -g -o parser.out build/emoji.c build/lexer.c 
 
 wasm:
 	make pre && emcc \
