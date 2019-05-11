@@ -1,0 +1,4435 @@
+Terminals unused in grammar
+
+   TFLOAT
+   TFLOATYPE
+   TTRUE
+   TFALSE
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: stmts
+
+    2 stmts: stmt
+    3      | stmts stmt
+
+    4 stmt: var_decl TSEP
+    5     | const_decl TSEP
+    6     | assignment TSEP
+    7     | if_cond
+    8     | if_else_cond
+    9     | while_loop
+   10     | for_loop
+   11     | switch_statemnet
+   12     | func_decl
+   13     | func_call
+   14     | TPASS TSEP
+   15     | error TSEP
+
+   16 $@1: %empty
+
+   17 func_decl: TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+
+   18 $@2: %empty
+
+   19 func_decl: TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+
+   20 $@3: %empty
+
+   21 func_decl: TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+
+   22 $@4: %empty
+
+   23 func_decl: TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+
+   24 args: %empty
+   25     | TINTYPE
+   26     | TSTRINGTYPE
+   27     | TBOOLTYPE
+   28     | TVOID
+   29     | args TCOMMA TINTYPE
+   30     | args TCOMMA TSTRINGTYPE
+   31     | args TCOMMA TBOOLTYPE
+   32     | args TCOMMA TVOID
+
+   33 func_call: TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+
+   34 call_args: %empty
+   35          | expr
+   36          | call_args TCOMMA expr
+
+   37 $@5: %empty
+
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+
+   39 case_blocks: case_stmt
+   40            | case_blocks case_stmt
+
+   41 case_stmt: TCASE TINTEGER TCOLON stmts TSEP
+   42          | TCASE TINTEGER TCOLON TBREAK TSEP
+   43          | TDEFAULT TCOLON stmts TSEP
+   44          | TDEFAULT TCOLON TBREAK TSEP
+   45          | TBREAK TSEP
+
+   46 $@6: %empty
+
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+
+   48 $@7: %empty
+
+   49 while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+
+   50 $@8: %empty
+
+   51 if_cond: TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+
+   52 $@9: %empty
+
+   53 if_else_cond: if_cond TELSE TLBRACE $@9 stmts TRBRACE
+
+   54 const_decl: TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+
+   57 var_decl: TINTYPE TIDENTIFIER
+   58         | TSTRINGTYPE TIDENTIFIER
+   59         | TBOOLTYPE TIDENTIFIER
+
+   60 expr: TIDENTIFIER TCEQ TINTEGER
+   61     | TIDENTIFIER TCNE TINTEGER
+   62     | TIDENTIFIER TCLT TINTEGER
+   63     | TIDENTIFIER TCLE TINTEGER
+   64     | TIDENTIFIER TCGT TINTEGER
+   65     | TIDENTIFIER TCGE TINTEGER
+   66     | TIDENTIFIER TAND TINTEGER
+   67     | TIDENTIFIER TOR TINTEGER
+   68     | TIDENTIFIER TCEQ expr
+   69     | TIDENTIFIER TCNE expr
+   70     | TIDENTIFIER TCLT expr
+   71     | TIDENTIFIER TCLE expr
+   72     | TIDENTIFIER TCGT expr
+   73     | TIDENTIFIER TCGE expr
+   74     | TIDENTIFIER TAND expr
+   75     | TIDENTIFIER TOR expr
+   76     | expr TCEQ TIDENTIFIER
+   77     | expr TCNE TIDENTIFIER
+   78     | expr TCLT TIDENTIFIER
+   79     | expr TCLE TIDENTIFIER
+   80     | expr TCGT TIDENTIFIER
+   81     | expr TCGE TIDENTIFIER
+   82     | expr TAND TIDENTIFIER
+   83     | expr TOR TIDENTIFIER
+   84     | func_call
+   85     | TNOT TLPAREN expr TRPAREN
+
+   86 arithmetic: TIDENTIFIER TPLUS arithmetic
+   87           | TIDENTIFIER TMINUS arithmetic
+   88           | TIDENTIFIER TMUL arithmetic
+   89           | TIDENTIFIER TDIV arithmetic
+   90           | TINTEGER TPLUS arithmetic
+   91           | TINTEGER TMINUS arithmetic
+   92           | TINTEGER TMUL arithmetic
+   93           | TINTEGER TDIV arithmetic
+   94           | TLPAREN arithmetic TRPAREN
+   95           | TMINUS TINTEGER
+   96           | TMINUS TIDENTIFIER
+   97           | TIDENTIFIER TINC
+   98           | TIDENTIFIER TDEC
+   99           | TINTEGER
+  100           | TIDENTIFIER
+
+  101 assignment: TIDENTIFIER TEQUAL TSTRING
+  102           | TIDENTIFIER TEQUAL expr
+  103           | TIDENTIFIER TEQUAL arithmetic
+
+  104 optexpr: expr
+  105        | %empty
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 15
+TIDENTIFIER <str> (258) 17 19 21 23 33 38 54 55 56 57 58 59 60 61 62
+    63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83
+    86 87 88 89 96 97 98 100 101 102 103
+TSTRING <str> (259) 55 101
+TINTEGER <token> (260) 41 42 60 61 62 63 64 65 66 67 90 91 92 93 95
+    99
+TFLOAT <floaty> (261)
+TCONST <token> (262) 54 55 56
+TIF <token> (263) 51
+TELSE <token> (264) 53
+TINTYPE <token> (265) 17 25 29 54 57
+TSTRINGTYPE <token> (266) 19 26 30 55 58
+TFLOATYPE <token> (267)
+TFOR <token> (268) 47
+TWHILE <token> (269) 49
+TBOOLTYPE <token> (270) 21 27 31 56 59
+TPASS <token> (271) 14
+TVOID <token> (272) 23 28 32
+TCEQ <token> (273) 60 68 76
+TCNE <token> (274) 61 69 77
+TCLT <token> (275) 62 70 78
+TCLE <token> (276) 63 71 79
+TCGT <token> (277) 64 72 80
+TCGE <token> (278) 65 73 81
+TEQUAL <token> (279) 54 55 56 101 102 103
+TTRUE <token> (280)
+TFALSE <token> (281)
+TSWITCH <token> (282) 38
+TDEFAULT <token> (283) 43 44
+TCASE <token> (284) 41 42
+TBREAK <token> (285) 42 44 45
+TLPAREN <token> (286) 17 19 21 23 33 38 47 49 51 85 94
+TRPAREN <token> (287) 17 19 21 23 33 38 47 49 51 85 94
+TLBRACE <token> (288) 17 19 21 23 38 47 49 51 53
+TRBRACE <token> (289) 17 19 21 23 38 47 49 51 53
+TCOMMA <token> (290) 29 30 31 32 36
+TSEP <token> (291) 4 5 6 14 15 33 41 42 43 44 45 47
+TCOLON <token> (292) 41 42 43 44
+TPLUS <token> (293) 86 90
+TMINUS <token> (294) 87 91 95 96
+TMUL <token> (295) 88 92
+TDIV <token> (296) 89 93
+TINC <token> (297) 97
+TDEC <token> (298) 98
+TAND <token> (299) 66 74 82
+TOR <token> (300) 67 75 83
+TNOT <token> (301) 85
+
+
+Nonterminals, with rules where they appear
+
+$accept (47)
+    on left: 0
+program (48)
+    on left: 1, on right: 0
+stmts (49)
+    on left: 2 3, on right: 1 3 17 19 21 23 41 43 47 49 51 53
+stmt (50)
+    on left: 4 5 6 7 8 9 10 11 12 13 14 15, on right: 2 3
+func_decl (51)
+    on left: 17 19 21 23, on right: 12
+$@1 (52)
+    on left: 16, on right: 17
+$@2 (53)
+    on left: 18, on right: 19
+$@3 (54)
+    on left: 20, on right: 21
+$@4 (55)
+    on left: 22, on right: 23
+args (56)
+    on left: 24 25 26 27 28 29 30 31 32, on right: 17 19 21 23 29 30
+    31 32
+func_call (57)
+    on left: 33, on right: 13 84
+call_args (58)
+    on left: 34 35 36, on right: 33 36
+switch_statemnet (59)
+    on left: 38, on right: 11
+$@5 (60)
+    on left: 37, on right: 38
+case_blocks (61)
+    on left: 39 40, on right: 38 40
+case_stmt (62)
+    on left: 41 42 43 44 45, on right: 39 40
+for_loop (63)
+    on left: 47, on right: 10
+$@6 (64)
+    on left: 46, on right: 47
+while_loop (65)
+    on left: 49, on right: 9
+$@7 (66)
+    on left: 48, on right: 49
+if_cond (67)
+    on left: 51, on right: 7 53
+$@8 (68)
+    on left: 50, on right: 51
+if_else_cond (69)
+    on left: 53, on right: 8
+$@9 (70)
+    on left: 52, on right: 53
+const_decl (71)
+    on left: 54 55 56, on right: 5
+var_decl (72)
+    on left: 57 58 59, on right: 4
+expr <boolean> (73)
+    on left: 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77
+    78 79 80 81 82 83 84 85, on right: 35 36 49 51 56 68 69 70 71 72
+    73 74 75 76 77 78 79 80 81 82 83 85 102 104
+arithmetic <token> (74)
+    on left: 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100, on right:
+    54 86 87 88 89 90 91 92 93 94 103
+assignment (75)
+    on left: 101 102 103, on right: 6
+optexpr (76)
+    on left: 104 105, on right: 47
+
+
+State 0
+
+    0 $accept: . program $end
+    1 program: . stmts
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    program           go to state 13
+    stmts             go to state 14
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 1
+
+   15 stmt: error . TSEP
+
+    TSEP  shift, and go to state 26
+
+
+State 2
+
+   33 func_call: TIDENTIFIER . TLPAREN call_args TRPAREN TSEP
+  101 assignment: TIDENTIFIER . TEQUAL TSTRING
+  102           | TIDENTIFIER . TEQUAL expr
+  103           | TIDENTIFIER . TEQUAL arithmetic
+
+    TEQUAL   shift, and go to state 27
+    TLPAREN  shift, and go to state 28
+
+
+State 3
+
+   54 const_decl: TCONST . TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | TCONST . TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | TCONST . TBOOLTYPE TIDENTIFIER TEQUAL expr
+
+    TINTYPE      shift, and go to state 29
+    TSTRINGTYPE  shift, and go to state 30
+    TBOOLTYPE    shift, and go to state 31
+
+
+State 4
+
+   51 if_cond: TIF . TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+
+    TLPAREN  shift, and go to state 32
+
+
+State 5
+
+   17 func_decl: TINTYPE . TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   57 var_decl: TINTYPE . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 33
+
+
+State 6
+
+   19 func_decl: TSTRINGTYPE . TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   58 var_decl: TSTRINGTYPE . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 34
+
+
+State 7
+
+   47 for_loop: TFOR . TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+
+    TLPAREN  shift, and go to state 35
+
+
+State 8
+
+   49 while_loop: TWHILE . TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+
+    TLPAREN  shift, and go to state 36
+
+
+State 9
+
+   21 func_decl: TBOOLTYPE . TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   59 var_decl: TBOOLTYPE . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 37
+
+
+State 10
+
+   14 stmt: TPASS . TSEP
+
+    TSEP  shift, and go to state 38
+
+
+State 11
+
+   23 func_decl: TVOID . TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+
+    TIDENTIFIER  shift, and go to state 39
+
+
+State 12
+
+   38 switch_statemnet: TSWITCH . TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+
+    TLPAREN  shift, and go to state 40
+
+
+State 13
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 41
+
+
+State 14
+
+    1 program: stmts .  [$end]
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    $end  reduce using rule 1 (program)
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 15
+
+    2 stmts: stmt .
+
+    $default  reduce using rule 2 (stmts)
+
+
+State 16
+
+   12 stmt: func_decl .
+
+    $default  reduce using rule 12 (stmt)
+
+
+State 17
+
+   13 stmt: func_call .
+
+    $default  reduce using rule 13 (stmt)
+
+
+State 18
+
+   11 stmt: switch_statemnet .
+
+    $default  reduce using rule 11 (stmt)
+
+
+State 19
+
+   10 stmt: for_loop .
+
+    $default  reduce using rule 10 (stmt)
+
+
+State 20
+
+    9 stmt: while_loop .
+
+    $default  reduce using rule 9 (stmt)
+
+
+State 21
+
+    7 stmt: if_cond .  [$end, error, TIDENTIFIER, TCONST, TIF, TINTYPE, TSTRINGTYPE, TFOR, TWHILE, TBOOLTYPE, TPASS, TVOID, TSWITCH, TRBRACE, TSEP]
+   53 if_else_cond: if_cond . TELSE TLBRACE $@9 stmts TRBRACE
+
+    TELSE  shift, and go to state 43
+
+    $default  reduce using rule 7 (stmt)
+
+
+State 22
+
+    8 stmt: if_else_cond .
+
+    $default  reduce using rule 8 (stmt)
+
+
+State 23
+
+    5 stmt: const_decl . TSEP
+
+    TSEP  shift, and go to state 44
+
+
+State 24
+
+    4 stmt: var_decl . TSEP
+
+    TSEP  shift, and go to state 45
+
+
+State 25
+
+    6 stmt: assignment . TSEP
+
+    TSEP  shift, and go to state 46
+
+
+State 26
+
+   15 stmt: error TSEP .
+
+    $default  reduce using rule 15 (stmt)
+
+
+State 27
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+  101 assignment: TIDENTIFIER TEQUAL . TSTRING
+  102           | TIDENTIFIER TEQUAL . expr
+  103           | TIDENTIFIER TEQUAL . arithmetic
+
+    TIDENTIFIER  shift, and go to state 47
+    TSTRING      shift, and go to state 48
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+    TNOT         shift, and go to state 52
+
+    func_call   go to state 53
+    expr        go to state 54
+    arithmetic  go to state 55
+
+
+State 28
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   33          | TIDENTIFIER TLPAREN . call_args TRPAREN TSEP
+   34 call_args: . %empty  [TRPAREN, TCOMMA]
+   35          | . expr
+   36          | . call_args TCOMMA expr
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    $default  reduce using rule 34 (call_args)
+
+    func_call  go to state 53
+    call_args  go to state 57
+    expr       go to state 58
+
+
+State 29
+
+   54 const_decl: TCONST TINTYPE . TIDENTIFIER TEQUAL arithmetic
+
+    TIDENTIFIER  shift, and go to state 59
+
+
+State 30
+
+   55 const_decl: TCONST TSTRINGTYPE . TIDENTIFIER TEQUAL TSTRING
+
+    TIDENTIFIER  shift, and go to state 60
+
+
+State 31
+
+   56 const_decl: TCONST TBOOLTYPE . TIDENTIFIER TEQUAL expr
+
+    TIDENTIFIER  shift, and go to state 61
+
+
+State 32
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   51 if_cond: TIF TLPAREN . expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 62
+
+
+State 33
+
+   17 func_decl: TINTYPE TIDENTIFIER . TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   57 var_decl: TINTYPE TIDENTIFIER .  [TSEP]
+
+    TLPAREN  shift, and go to state 63
+
+    $default  reduce using rule 57 (var_decl)
+
+
+State 34
+
+   19 func_decl: TSTRINGTYPE TIDENTIFIER . TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   58 var_decl: TSTRINGTYPE TIDENTIFIER .  [TSEP]
+
+    TLPAREN  shift, and go to state 64
+
+    $default  reduce using rule 58 (var_decl)
+
+
+State 35
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   47 for_loop: TFOR TLPAREN . optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+  104 optexpr: . expr
+  105        | . %empty  [TSEP]
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    $default  reduce using rule 105 (optexpr)
+
+    func_call  go to state 53
+    expr       go to state 65
+    optexpr    go to state 66
+
+
+State 36
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   49 while_loop: TWHILE TLPAREN . expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 67
+
+
+State 37
+
+   21 func_decl: TBOOLTYPE TIDENTIFIER . TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   59 var_decl: TBOOLTYPE TIDENTIFIER .  [TSEP]
+
+    TLPAREN  shift, and go to state 68
+
+    $default  reduce using rule 59 (var_decl)
+
+
+State 38
+
+   14 stmt: TPASS TSEP .
+
+    $default  reduce using rule 14 (stmt)
+
+
+State 39
+
+   23 func_decl: TVOID TIDENTIFIER . TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+
+    TLPAREN  shift, and go to state 69
+
+
+State 40
+
+   38 switch_statemnet: TSWITCH TLPAREN . TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+
+    TIDENTIFIER  shift, and go to state 70
+
+
+State 41
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 42
+
+    3 stmts: stmts stmt .
+
+    $default  reduce using rule 3 (stmts)
+
+
+State 43
+
+   53 if_else_cond: if_cond TELSE . TLBRACE $@9 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 71
+
+
+State 44
+
+    5 stmt: const_decl TSEP .
+
+    $default  reduce using rule 5 (stmt)
+
+
+State 45
+
+    4 stmt: var_decl TSEP .
+
+    $default  reduce using rule 4 (stmt)
+
+
+State 46
+
+    6 stmt: assignment TSEP .
+
+    $default  reduce using rule 6 (stmt)
+
+
+State 47
+
+   33 func_call: TIDENTIFIER . TLPAREN call_args TRPAREN TSEP
+   60 expr: TIDENTIFIER . TCEQ TINTEGER
+   61     | TIDENTIFIER . TCNE TINTEGER
+   62     | TIDENTIFIER . TCLT TINTEGER
+   63     | TIDENTIFIER . TCLE TINTEGER
+   64     | TIDENTIFIER . TCGT TINTEGER
+   65     | TIDENTIFIER . TCGE TINTEGER
+   66     | TIDENTIFIER . TAND TINTEGER
+   67     | TIDENTIFIER . TOR TINTEGER
+   68     | TIDENTIFIER . TCEQ expr
+   69     | TIDENTIFIER . TCNE expr
+   70     | TIDENTIFIER . TCLT expr
+   71     | TIDENTIFIER . TCLE expr
+   72     | TIDENTIFIER . TCGT expr
+   73     | TIDENTIFIER . TCGE expr
+   74     | TIDENTIFIER . TAND expr
+   75     | TIDENTIFIER . TOR expr
+   86 arithmetic: TIDENTIFIER . TPLUS arithmetic
+   87           | TIDENTIFIER . TMINUS arithmetic
+   88           | TIDENTIFIER . TMUL arithmetic
+   89           | TIDENTIFIER . TDIV arithmetic
+   97           | TIDENTIFIER . TINC
+   98           | TIDENTIFIER . TDEC
+  100           | TIDENTIFIER .  [TSEP]
+
+    TCEQ     shift, and go to state 72
+    TCNE     shift, and go to state 73
+    TCLT     shift, and go to state 74
+    TCLE     shift, and go to state 75
+    TCGT     shift, and go to state 76
+    TCGE     shift, and go to state 77
+    TLPAREN  shift, and go to state 28
+    TPLUS    shift, and go to state 78
+    TMINUS   shift, and go to state 79
+    TMUL     shift, and go to state 80
+    TDIV     shift, and go to state 81
+    TINC     shift, and go to state 82
+    TDEC     shift, and go to state 83
+    TAND     shift, and go to state 84
+    TOR      shift, and go to state 85
+
+    $default  reduce using rule 100 (arithmetic)
+
+
+State 48
+
+  101 assignment: TIDENTIFIER TEQUAL TSTRING .
+
+    $default  reduce using rule 101 (assignment)
+
+
+State 49
+
+   90 arithmetic: TINTEGER . TPLUS arithmetic
+   91           | TINTEGER . TMINUS arithmetic
+   92           | TINTEGER . TMUL arithmetic
+   93           | TINTEGER . TDIV arithmetic
+   99           | TINTEGER .  [TRPAREN, TSEP]
+
+    TPLUS   shift, and go to state 86
+    TMINUS  shift, and go to state 87
+    TMUL    shift, and go to state 88
+    TDIV    shift, and go to state 89
+
+    $default  reduce using rule 99 (arithmetic)
+
+
+State 50
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   94           | TLPAREN . arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 91
+
+
+State 51
+
+   95 arithmetic: TMINUS . TINTEGER
+   96           | TMINUS . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 92
+    TINTEGER     shift, and go to state 93
+
+
+State 52
+
+   85 expr: TNOT . TLPAREN expr TRPAREN
+
+    TLPAREN  shift, and go to state 94
+
+
+State 53
+
+   84 expr: func_call .
+
+    $default  reduce using rule 84 (expr)
+
+
+State 54
+
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+  102 assignment: TIDENTIFIER TEQUAL expr .  [TSEP]
+
+    TCEQ  shift, and go to state 95
+    TCNE  shift, and go to state 96
+    TCLT  shift, and go to state 97
+    TCLE  shift, and go to state 98
+    TCGT  shift, and go to state 99
+    TCGE  shift, and go to state 100
+    TAND  shift, and go to state 101
+    TOR   shift, and go to state 102
+
+    $default  reduce using rule 102 (assignment)
+
+
+State 55
+
+  103 assignment: TIDENTIFIER TEQUAL arithmetic .
+
+    $default  reduce using rule 103 (assignment)
+
+
+State 56
+
+   33 func_call: TIDENTIFIER . TLPAREN call_args TRPAREN TSEP
+   60 expr: TIDENTIFIER . TCEQ TINTEGER
+   61     | TIDENTIFIER . TCNE TINTEGER
+   62     | TIDENTIFIER . TCLT TINTEGER
+   63     | TIDENTIFIER . TCLE TINTEGER
+   64     | TIDENTIFIER . TCGT TINTEGER
+   65     | TIDENTIFIER . TCGE TINTEGER
+   66     | TIDENTIFIER . TAND TINTEGER
+   67     | TIDENTIFIER . TOR TINTEGER
+   68     | TIDENTIFIER . TCEQ expr
+   69     | TIDENTIFIER . TCNE expr
+   70     | TIDENTIFIER . TCLT expr
+   71     | TIDENTIFIER . TCLE expr
+   72     | TIDENTIFIER . TCGT expr
+   73     | TIDENTIFIER . TCGE expr
+   74     | TIDENTIFIER . TAND expr
+   75     | TIDENTIFIER . TOR expr
+
+    TCEQ     shift, and go to state 72
+    TCNE     shift, and go to state 73
+    TCLT     shift, and go to state 74
+    TCLE     shift, and go to state 75
+    TCGT     shift, and go to state 76
+    TCGE     shift, and go to state 77
+    TLPAREN  shift, and go to state 28
+    TAND     shift, and go to state 84
+    TOR      shift, and go to state 85
+
+
+State 57
+
+   33 func_call: TIDENTIFIER TLPAREN call_args . TRPAREN TSEP
+   36 call_args: call_args . TCOMMA expr
+
+    TRPAREN  shift, and go to state 103
+    TCOMMA   shift, and go to state 104
+
+
+State 58
+
+   35 call_args: expr .  [TRPAREN, TCOMMA]
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    TCEQ  shift, and go to state 95
+    TCNE  shift, and go to state 96
+    TCLT  shift, and go to state 97
+    TCLE  shift, and go to state 98
+    TCGT  shift, and go to state 99
+    TCGE  shift, and go to state 100
+    TAND  shift, and go to state 101
+    TOR   shift, and go to state 102
+
+    $default  reduce using rule 35 (call_args)
+
+
+State 59
+
+   54 const_decl: TCONST TINTYPE TIDENTIFIER . TEQUAL arithmetic
+
+    TEQUAL  shift, and go to state 105
+
+
+State 60
+
+   55 const_decl: TCONST TSTRINGTYPE TIDENTIFIER . TEQUAL TSTRING
+
+    TEQUAL  shift, and go to state 106
+
+
+State 61
+
+   56 const_decl: TCONST TBOOLTYPE TIDENTIFIER . TEQUAL expr
+
+    TEQUAL  shift, and go to state 107
+
+
+State 62
+
+   51 if_cond: TIF TLPAREN expr . TRPAREN TLBRACE $@8 stmts TRBRACE
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    TCEQ     shift, and go to state 95
+    TCNE     shift, and go to state 96
+    TCLT     shift, and go to state 97
+    TCLE     shift, and go to state 98
+    TCGT     shift, and go to state 99
+    TCGE     shift, and go to state 100
+    TRPAREN  shift, and go to state 108
+    TAND     shift, and go to state 101
+    TOR      shift, and go to state 102
+
+
+State 63
+
+   17 func_decl: TINTYPE TIDENTIFIER TLPAREN . args TRPAREN TLBRACE $@1 stmts TRBRACE
+   24 args: . %empty  [TRPAREN, TCOMMA]
+   25     | . TINTYPE
+   26     | . TSTRINGTYPE
+   27     | . TBOOLTYPE
+   28     | . TVOID
+   29     | . args TCOMMA TINTYPE
+   30     | . args TCOMMA TSTRINGTYPE
+   31     | . args TCOMMA TBOOLTYPE
+   32     | . args TCOMMA TVOID
+
+    TINTYPE      shift, and go to state 109
+    TSTRINGTYPE  shift, and go to state 110
+    TBOOLTYPE    shift, and go to state 111
+    TVOID        shift, and go to state 112
+
+    $default  reduce using rule 24 (args)
+
+    args  go to state 113
+
+
+State 64
+
+   19 func_decl: TSTRINGTYPE TIDENTIFIER TLPAREN . args TRPAREN TLBRACE $@2 stmts TRBRACE
+   24 args: . %empty  [TRPAREN, TCOMMA]
+   25     | . TINTYPE
+   26     | . TSTRINGTYPE
+   27     | . TBOOLTYPE
+   28     | . TVOID
+   29     | . args TCOMMA TINTYPE
+   30     | . args TCOMMA TSTRINGTYPE
+   31     | . args TCOMMA TBOOLTYPE
+   32     | . args TCOMMA TVOID
+
+    TINTYPE      shift, and go to state 109
+    TSTRINGTYPE  shift, and go to state 110
+    TBOOLTYPE    shift, and go to state 111
+    TVOID        shift, and go to state 112
+
+    $default  reduce using rule 24 (args)
+
+    args  go to state 114
+
+
+State 65
+
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+  104 optexpr: expr .  [TRPAREN, TSEP]
+
+    TCEQ  shift, and go to state 95
+    TCNE  shift, and go to state 96
+    TCLT  shift, and go to state 97
+    TCLE  shift, and go to state 98
+    TCGT  shift, and go to state 99
+    TCGE  shift, and go to state 100
+    TAND  shift, and go to state 101
+    TOR   shift, and go to state 102
+
+    $default  reduce using rule 104 (optexpr)
+
+
+State 66
+
+   47 for_loop: TFOR TLPAREN optexpr . TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+
+    TSEP  shift, and go to state 115
+
+
+State 67
+
+   49 while_loop: TWHILE TLPAREN expr . TRPAREN TLBRACE $@7 stmts TRBRACE
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    TCEQ     shift, and go to state 95
+    TCNE     shift, and go to state 96
+    TCLT     shift, and go to state 97
+    TCLE     shift, and go to state 98
+    TCGT     shift, and go to state 99
+    TCGE     shift, and go to state 100
+    TRPAREN  shift, and go to state 116
+    TAND     shift, and go to state 101
+    TOR      shift, and go to state 102
+
+
+State 68
+
+   21 func_decl: TBOOLTYPE TIDENTIFIER TLPAREN . args TRPAREN TLBRACE $@3 stmts TRBRACE
+   24 args: . %empty  [TRPAREN, TCOMMA]
+   25     | . TINTYPE
+   26     | . TSTRINGTYPE
+   27     | . TBOOLTYPE
+   28     | . TVOID
+   29     | . args TCOMMA TINTYPE
+   30     | . args TCOMMA TSTRINGTYPE
+   31     | . args TCOMMA TBOOLTYPE
+   32     | . args TCOMMA TVOID
+
+    TINTYPE      shift, and go to state 109
+    TSTRINGTYPE  shift, and go to state 110
+    TBOOLTYPE    shift, and go to state 111
+    TVOID        shift, and go to state 112
+
+    $default  reduce using rule 24 (args)
+
+    args  go to state 117
+
+
+State 69
+
+   23 func_decl: TVOID TIDENTIFIER TLPAREN . args TRPAREN TLBRACE $@4 stmts TRBRACE
+   24 args: . %empty  [TRPAREN, TCOMMA]
+   25     | . TINTYPE
+   26     | . TSTRINGTYPE
+   27     | . TBOOLTYPE
+   28     | . TVOID
+   29     | . args TCOMMA TINTYPE
+   30     | . args TCOMMA TSTRINGTYPE
+   31     | . args TCOMMA TBOOLTYPE
+   32     | . args TCOMMA TVOID
+
+    TINTYPE      shift, and go to state 109
+    TSTRINGTYPE  shift, and go to state 110
+    TBOOLTYPE    shift, and go to state 111
+    TVOID        shift, and go to state 112
+
+    $default  reduce using rule 24 (args)
+
+    args  go to state 118
+
+
+State 70
+
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER . TRPAREN TLBRACE $@5 case_blocks TRBRACE
+
+    TRPAREN  shift, and go to state 119
+
+
+State 71
+
+   52 $@9: . %empty
+   53 if_else_cond: if_cond TELSE TLBRACE . $@9 stmts TRBRACE
+
+    $default  reduce using rule 52 ($@9)
+
+    $@9  go to state 120
+
+
+State 72
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   60     | TIDENTIFIER TCEQ . TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   68     | TIDENTIFIER TCEQ . expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 121
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 122
+
+
+State 73
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   61     | TIDENTIFIER TCNE . TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   69     | TIDENTIFIER TCNE . expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 123
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 124
+
+
+State 74
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   62     | TIDENTIFIER TCLT . TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   70     | TIDENTIFIER TCLT . expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 125
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 126
+
+
+State 75
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   63     | TIDENTIFIER TCLE . TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   71     | TIDENTIFIER TCLE . expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 127
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 128
+
+
+State 76
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   64     | TIDENTIFIER TCGT . TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   72     | TIDENTIFIER TCGT . expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 129
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 130
+
+
+State 77
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   65     | TIDENTIFIER TCGE . TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   73     | TIDENTIFIER TCGE . expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 131
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 132
+
+
+State 78
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   86           | TIDENTIFIER TPLUS . arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 133
+
+
+State 79
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   87           | TIDENTIFIER TMINUS . arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 134
+
+
+State 80
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   88           | TIDENTIFIER TMUL . arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 135
+
+
+State 81
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   89           | TIDENTIFIER TDIV . arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 136
+
+
+State 82
+
+   97 arithmetic: TIDENTIFIER TINC .
+
+    $default  reduce using rule 97 (arithmetic)
+
+
+State 83
+
+   98 arithmetic: TIDENTIFIER TDEC .
+
+    $default  reduce using rule 98 (arithmetic)
+
+
+State 84
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   66     | TIDENTIFIER TAND . TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   74     | TIDENTIFIER TAND . expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 137
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 138
+
+
+State 85
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   67     | TIDENTIFIER TOR . TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   75     | TIDENTIFIER TOR . expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TINTEGER     shift, and go to state 139
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 140
+
+
+State 86
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   90           | TINTEGER TPLUS . arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 141
+
+
+State 87
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   91           | TINTEGER TMINUS . arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 142
+
+
+State 88
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   92           | TINTEGER TMUL . arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 143
+
+
+State 89
+
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   93           | TINTEGER TDIV . arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 144
+
+
+State 90
+
+   86 arithmetic: TIDENTIFIER . TPLUS arithmetic
+   87           | TIDENTIFIER . TMINUS arithmetic
+   88           | TIDENTIFIER . TMUL arithmetic
+   89           | TIDENTIFIER . TDIV arithmetic
+   97           | TIDENTIFIER . TINC
+   98           | TIDENTIFIER . TDEC
+  100           | TIDENTIFIER .  [TRPAREN, TSEP]
+
+    TPLUS   shift, and go to state 78
+    TMINUS  shift, and go to state 79
+    TMUL    shift, and go to state 80
+    TDIV    shift, and go to state 81
+    TINC    shift, and go to state 82
+    TDEC    shift, and go to state 83
+
+    $default  reduce using rule 100 (arithmetic)
+
+
+State 91
+
+   94 arithmetic: TLPAREN arithmetic . TRPAREN
+
+    TRPAREN  shift, and go to state 145
+
+
+State 92
+
+   96 arithmetic: TMINUS TIDENTIFIER .
+
+    $default  reduce using rule 96 (arithmetic)
+
+
+State 93
+
+   95 arithmetic: TMINUS TINTEGER .
+
+    $default  reduce using rule 95 (arithmetic)
+
+
+State 94
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+   85     | TNOT TLPAREN . expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 146
+
+
+State 95
+
+   76 expr: expr TCEQ . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 147
+
+
+State 96
+
+   77 expr: expr TCNE . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 148
+
+
+State 97
+
+   78 expr: expr TCLT . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 149
+
+
+State 98
+
+   79 expr: expr TCLE . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 150
+
+
+State 99
+
+   80 expr: expr TCGT . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 151
+
+
+State 100
+
+   81 expr: expr TCGE . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 152
+
+
+State 101
+
+   82 expr: expr TAND . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 153
+
+
+State 102
+
+   83 expr: expr TOR . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 154
+
+
+State 103
+
+   33 func_call: TIDENTIFIER TLPAREN call_args TRPAREN . TSEP
+
+    TSEP  shift, and go to state 155
+
+
+State 104
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   36 call_args: call_args TCOMMA . expr
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 156
+
+
+State 105
+
+   54 const_decl: TCONST TINTYPE TIDENTIFIER TEQUAL . arithmetic
+   86 arithmetic: . TIDENTIFIER TPLUS arithmetic
+   87           | . TIDENTIFIER TMINUS arithmetic
+   88           | . TIDENTIFIER TMUL arithmetic
+   89           | . TIDENTIFIER TDIV arithmetic
+   90           | . TINTEGER TPLUS arithmetic
+   91           | . TINTEGER TMINUS arithmetic
+   92           | . TINTEGER TMUL arithmetic
+   93           | . TINTEGER TDIV arithmetic
+   94           | . TLPAREN arithmetic TRPAREN
+   95           | . TMINUS TINTEGER
+   96           | . TMINUS TIDENTIFIER
+   97           | . TIDENTIFIER TINC
+   98           | . TIDENTIFIER TDEC
+   99           | . TINTEGER
+  100           | . TIDENTIFIER
+
+    TIDENTIFIER  shift, and go to state 90
+    TINTEGER     shift, and go to state 49
+    TLPAREN      shift, and go to state 50
+    TMINUS       shift, and go to state 51
+
+    arithmetic  go to state 157
+
+
+State 106
+
+   55 const_decl: TCONST TSTRINGTYPE TIDENTIFIER TEQUAL . TSTRING
+
+    TSTRING  shift, and go to state 158
+
+
+State 107
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   56 const_decl: TCONST TBOOLTYPE TIDENTIFIER TEQUAL . expr
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    func_call  go to state 53
+    expr       go to state 159
+
+
+State 108
+
+   51 if_cond: TIF TLPAREN expr TRPAREN . TLBRACE $@8 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 160
+
+
+State 109
+
+   25 args: TINTYPE .
+
+    $default  reduce using rule 25 (args)
+
+
+State 110
+
+   26 args: TSTRINGTYPE .
+
+    $default  reduce using rule 26 (args)
+
+
+State 111
+
+   27 args: TBOOLTYPE .
+
+    $default  reduce using rule 27 (args)
+
+
+State 112
+
+   28 args: TVOID .
+
+    $default  reduce using rule 28 (args)
+
+
+State 113
+
+   17 func_decl: TINTYPE TIDENTIFIER TLPAREN args . TRPAREN TLBRACE $@1 stmts TRBRACE
+   29 args: args . TCOMMA TINTYPE
+   30     | args . TCOMMA TSTRINGTYPE
+   31     | args . TCOMMA TBOOLTYPE
+   32     | args . TCOMMA TVOID
+
+    TRPAREN  shift, and go to state 161
+    TCOMMA   shift, and go to state 162
+
+
+State 114
+
+   19 func_decl: TSTRINGTYPE TIDENTIFIER TLPAREN args . TRPAREN TLBRACE $@2 stmts TRBRACE
+   29 args: args . TCOMMA TINTYPE
+   30     | args . TCOMMA TSTRINGTYPE
+   31     | args . TCOMMA TBOOLTYPE
+   32     | args . TCOMMA TVOID
+
+    TRPAREN  shift, and go to state 163
+    TCOMMA   shift, and go to state 162
+
+
+State 115
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   47 for_loop: TFOR TLPAREN optexpr TSEP . optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+  104 optexpr: . expr
+  105        | . %empty  [TSEP]
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    $default  reduce using rule 105 (optexpr)
+
+    func_call  go to state 53
+    expr       go to state 65
+    optexpr    go to state 164
+
+
+State 116
+
+   49 while_loop: TWHILE TLPAREN expr TRPAREN . TLBRACE $@7 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 165
+
+
+State 117
+
+   21 func_decl: TBOOLTYPE TIDENTIFIER TLPAREN args . TRPAREN TLBRACE $@3 stmts TRBRACE
+   29 args: args . TCOMMA TINTYPE
+   30     | args . TCOMMA TSTRINGTYPE
+   31     | args . TCOMMA TBOOLTYPE
+   32     | args . TCOMMA TVOID
+
+    TRPAREN  shift, and go to state 166
+    TCOMMA   shift, and go to state 162
+
+
+State 118
+
+   23 func_decl: TVOID TIDENTIFIER TLPAREN args . TRPAREN TLBRACE $@4 stmts TRBRACE
+   29 args: args . TCOMMA TINTYPE
+   30     | args . TCOMMA TSTRINGTYPE
+   31     | args . TCOMMA TBOOLTYPE
+   32     | args . TCOMMA TVOID
+
+    TRPAREN  shift, and go to state 167
+    TCOMMA   shift, and go to state 162
+
+
+State 119
+
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN . TLBRACE $@5 case_blocks TRBRACE
+
+    TLBRACE  shift, and go to state 168
+
+
+State 120
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   53             | if_cond TELSE TLBRACE $@9 . stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 169
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 121
+
+   60 expr: TIDENTIFIER TCEQ TINTEGER .
+
+    $default  reduce using rule 60 (expr)
+
+
+State 122
+
+   68 expr: TIDENTIFIER TCEQ expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 68 (expr)
+
+    Conflict between rule 68 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 68 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 68 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 68 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 68 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 68 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 68 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 68 and token TOR resolved as reduce (%left TOR).
+
+
+State 123
+
+   61 expr: TIDENTIFIER TCNE TINTEGER .
+
+    $default  reduce using rule 61 (expr)
+
+
+State 124
+
+   69 expr: TIDENTIFIER TCNE expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 69 (expr)
+
+    Conflict between rule 69 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 69 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 69 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 69 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 69 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 69 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 69 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 69 and token TOR resolved as reduce (%left TOR).
+
+
+State 125
+
+   62 expr: TIDENTIFIER TCLT TINTEGER .
+
+    $default  reduce using rule 62 (expr)
+
+
+State 126
+
+   70 expr: TIDENTIFIER TCLT expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 70 (expr)
+
+    Conflict between rule 70 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 70 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 70 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 70 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 70 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 70 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 70 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 70 and token TOR resolved as reduce (%left TOR).
+
+
+State 127
+
+   63 expr: TIDENTIFIER TCLE TINTEGER .
+
+    $default  reduce using rule 63 (expr)
+
+
+State 128
+
+   71 expr: TIDENTIFIER TCLE expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 71 (expr)
+
+    Conflict between rule 71 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 71 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 71 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 71 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 71 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 71 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 71 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 71 and token TOR resolved as reduce (%left TOR).
+
+
+State 129
+
+   64 expr: TIDENTIFIER TCGT TINTEGER .
+
+    $default  reduce using rule 64 (expr)
+
+
+State 130
+
+   72 expr: TIDENTIFIER TCGT expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 72 (expr)
+
+    Conflict between rule 72 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 72 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 72 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 72 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 72 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 72 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 72 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 72 and token TOR resolved as reduce (%left TOR).
+
+
+State 131
+
+   65 expr: TIDENTIFIER TCGE TINTEGER .
+
+    $default  reduce using rule 65 (expr)
+
+
+State 132
+
+   73 expr: TIDENTIFIER TCGE expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 73 (expr)
+
+    Conflict between rule 73 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 73 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 73 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 73 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 73 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 73 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 73 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 73 and token TOR resolved as reduce (%left TOR).
+
+
+State 133
+
+   86 arithmetic: TIDENTIFIER TPLUS arithmetic .
+
+    $default  reduce using rule 86 (arithmetic)
+
+
+State 134
+
+   87 arithmetic: TIDENTIFIER TMINUS arithmetic .
+
+    $default  reduce using rule 87 (arithmetic)
+
+
+State 135
+
+   88 arithmetic: TIDENTIFIER TMUL arithmetic .
+
+    $default  reduce using rule 88 (arithmetic)
+
+
+State 136
+
+   89 arithmetic: TIDENTIFIER TDIV arithmetic .
+
+    $default  reduce using rule 89 (arithmetic)
+
+
+State 137
+
+   66 expr: TIDENTIFIER TAND TINTEGER .
+
+    $default  reduce using rule 66 (expr)
+
+
+State 138
+
+   74 expr: TIDENTIFIER TAND expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 74 (expr)
+
+    Conflict between rule 74 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 74 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 74 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 74 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 74 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 74 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 74 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 74 and token TOR resolved as reduce (%left TOR).
+
+
+State 139
+
+   67 expr: TIDENTIFIER TOR TINTEGER .
+
+    $default  reduce using rule 67 (expr)
+
+
+State 140
+
+   75 expr: TIDENTIFIER TOR expr .  [TCEQ, TCNE, TCLT, TCLE, TCGT, TCGE, TRPAREN, TCOMMA, TSEP, TAND, TOR]
+   76     | expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    $default  reduce using rule 75 (expr)
+
+    Conflict between rule 75 and token TCEQ resolved as reduce (%left TCEQ).
+    Conflict between rule 75 and token TCNE resolved as reduce (%left TCNE).
+    Conflict between rule 75 and token TCLT resolved as reduce (%left TCLT).
+    Conflict between rule 75 and token TCLE resolved as reduce (%left TCLE).
+    Conflict between rule 75 and token TCGT resolved as reduce (%left TCGT).
+    Conflict between rule 75 and token TCGE resolved as reduce (%left TCGE).
+    Conflict between rule 75 and token TAND resolved as reduce (%left TAND).
+    Conflict between rule 75 and token TOR resolved as reduce (%left TOR).
+
+
+State 141
+
+   90 arithmetic: TINTEGER TPLUS arithmetic .
+
+    $default  reduce using rule 90 (arithmetic)
+
+
+State 142
+
+   91 arithmetic: TINTEGER TMINUS arithmetic .
+
+    $default  reduce using rule 91 (arithmetic)
+
+
+State 143
+
+   92 arithmetic: TINTEGER TMUL arithmetic .
+
+    $default  reduce using rule 92 (arithmetic)
+
+
+State 144
+
+   93 arithmetic: TINTEGER TDIV arithmetic .
+
+    $default  reduce using rule 93 (arithmetic)
+
+
+State 145
+
+   94 arithmetic: TLPAREN arithmetic TRPAREN .
+
+    $default  reduce using rule 94 (arithmetic)
+
+
+State 146
+
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+   85     | TNOT TLPAREN expr . TRPAREN
+
+    TCEQ     shift, and go to state 95
+    TCNE     shift, and go to state 96
+    TCLT     shift, and go to state 97
+    TCLE     shift, and go to state 98
+    TCGT     shift, and go to state 99
+    TCGE     shift, and go to state 100
+    TRPAREN  shift, and go to state 170
+    TAND     shift, and go to state 101
+    TOR      shift, and go to state 102
+
+
+State 147
+
+   76 expr: expr TCEQ TIDENTIFIER .
+
+    $default  reduce using rule 76 (expr)
+
+
+State 148
+
+   77 expr: expr TCNE TIDENTIFIER .
+
+    $default  reduce using rule 77 (expr)
+
+
+State 149
+
+   78 expr: expr TCLT TIDENTIFIER .
+
+    $default  reduce using rule 78 (expr)
+
+
+State 150
+
+   79 expr: expr TCLE TIDENTIFIER .
+
+    $default  reduce using rule 79 (expr)
+
+
+State 151
+
+   80 expr: expr TCGT TIDENTIFIER .
+
+    $default  reduce using rule 80 (expr)
+
+
+State 152
+
+   81 expr: expr TCGE TIDENTIFIER .
+
+    $default  reduce using rule 81 (expr)
+
+
+State 153
+
+   82 expr: expr TAND TIDENTIFIER .
+
+    $default  reduce using rule 82 (expr)
+
+
+State 154
+
+   83 expr: expr TOR TIDENTIFIER .
+
+    $default  reduce using rule 83 (expr)
+
+
+State 155
+
+   33 func_call: TIDENTIFIER TLPAREN call_args TRPAREN TSEP .
+
+    $default  reduce using rule 33 (func_call)
+
+
+State 156
+
+   36 call_args: call_args TCOMMA expr .  [TRPAREN, TCOMMA]
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    TCEQ  shift, and go to state 95
+    TCNE  shift, and go to state 96
+    TCLT  shift, and go to state 97
+    TCLE  shift, and go to state 98
+    TCGT  shift, and go to state 99
+    TCGE  shift, and go to state 100
+    TAND  shift, and go to state 101
+    TOR   shift, and go to state 102
+
+    $default  reduce using rule 36 (call_args)
+
+
+State 157
+
+   54 const_decl: TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic .
+
+    $default  reduce using rule 54 (const_decl)
+
+
+State 158
+
+   55 const_decl: TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING .
+
+    $default  reduce using rule 55 (const_decl)
+
+
+State 159
+
+   56 const_decl: TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr .  [TSEP]
+   76 expr: expr . TCEQ TIDENTIFIER
+   77     | expr . TCNE TIDENTIFIER
+   78     | expr . TCLT TIDENTIFIER
+   79     | expr . TCLE TIDENTIFIER
+   80     | expr . TCGT TIDENTIFIER
+   81     | expr . TCGE TIDENTIFIER
+   82     | expr . TAND TIDENTIFIER
+   83     | expr . TOR TIDENTIFIER
+
+    TCEQ  shift, and go to state 95
+    TCNE  shift, and go to state 96
+    TCLT  shift, and go to state 97
+    TCLE  shift, and go to state 98
+    TCGT  shift, and go to state 99
+    TCGE  shift, and go to state 100
+    TAND  shift, and go to state 101
+    TOR   shift, and go to state 102
+
+    $default  reduce using rule 56 (const_decl)
+
+
+State 160
+
+   50 $@8: . %empty
+   51 if_cond: TIF TLPAREN expr TRPAREN TLBRACE . $@8 stmts TRBRACE
+
+    $default  reduce using rule 50 ($@8)
+
+    $@8  go to state 171
+
+
+State 161
+
+   17 func_decl: TINTYPE TIDENTIFIER TLPAREN args TRPAREN . TLBRACE $@1 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 172
+
+
+State 162
+
+   29 args: args TCOMMA . TINTYPE
+   30     | args TCOMMA . TSTRINGTYPE
+   31     | args TCOMMA . TBOOLTYPE
+   32     | args TCOMMA . TVOID
+
+    TINTYPE      shift, and go to state 173
+    TSTRINGTYPE  shift, and go to state 174
+    TBOOLTYPE    shift, and go to state 175
+    TVOID        shift, and go to state 176
+
+
+State 163
+
+   19 func_decl: TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN . TLBRACE $@2 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 177
+
+
+State 164
+
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr . TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+
+    TSEP  shift, and go to state 178
+
+
+State 165
+
+   48 $@7: . %empty
+   49 while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE . $@7 stmts TRBRACE
+
+    $default  reduce using rule 48 ($@7)
+
+    $@7  go to state 179
+
+
+State 166
+
+   21 func_decl: TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN . TLBRACE $@3 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 180
+
+
+State 167
+
+   23 func_decl: TVOID TIDENTIFIER TLPAREN args TRPAREN . TLBRACE $@4 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 181
+
+
+State 168
+
+   37 $@5: . %empty
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE . $@5 case_blocks TRBRACE
+
+    $default  reduce using rule 37 ($@5)
+
+    $@5  go to state 182
+
+
+State 169
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   53             | if_cond TELSE TLBRACE $@9 stmts . TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 183
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 170
+
+   85 expr: TNOT TLPAREN expr TRPAREN .
+
+    $default  reduce using rule 85 (expr)
+
+
+State 171
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   51        | TIF TLPAREN expr TRPAREN TLBRACE $@8 . stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 184
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 172
+
+   16 $@1: . %empty
+   17 func_decl: TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE . $@1 stmts TRBRACE
+
+    $default  reduce using rule 16 ($@1)
+
+    $@1  go to state 185
+
+
+State 173
+
+   29 args: args TCOMMA TINTYPE .
+
+    $default  reduce using rule 29 (args)
+
+
+State 174
+
+   30 args: args TCOMMA TSTRINGTYPE .
+
+    $default  reduce using rule 30 (args)
+
+
+State 175
+
+   31 args: args TCOMMA TBOOLTYPE .
+
+    $default  reduce using rule 31 (args)
+
+
+State 176
+
+   32 args: args TCOMMA TVOID .
+
+    $default  reduce using rule 32 (args)
+
+
+State 177
+
+   18 $@2: . %empty
+   19 func_decl: TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE . $@2 stmts TRBRACE
+
+    $default  reduce using rule 18 ($@2)
+
+    $@2  go to state 186
+
+
+State 178
+
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP . optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   60 expr: . TIDENTIFIER TCEQ TINTEGER
+   61     | . TIDENTIFIER TCNE TINTEGER
+   62     | . TIDENTIFIER TCLT TINTEGER
+   63     | . TIDENTIFIER TCLE TINTEGER
+   64     | . TIDENTIFIER TCGT TINTEGER
+   65     | . TIDENTIFIER TCGE TINTEGER
+   66     | . TIDENTIFIER TAND TINTEGER
+   67     | . TIDENTIFIER TOR TINTEGER
+   68     | . TIDENTIFIER TCEQ expr
+   69     | . TIDENTIFIER TCNE expr
+   70     | . TIDENTIFIER TCLT expr
+   71     | . TIDENTIFIER TCLE expr
+   72     | . TIDENTIFIER TCGT expr
+   73     | . TIDENTIFIER TCGE expr
+   74     | . TIDENTIFIER TAND expr
+   75     | . TIDENTIFIER TOR expr
+   76     | . expr TCEQ TIDENTIFIER
+   77     | . expr TCNE TIDENTIFIER
+   78     | . expr TCLT TIDENTIFIER
+   79     | . expr TCLE TIDENTIFIER
+   80     | . expr TCGT TIDENTIFIER
+   81     | . expr TCGE TIDENTIFIER
+   82     | . expr TAND TIDENTIFIER
+   83     | . expr TOR TIDENTIFIER
+   84     | . func_call
+   85     | . TNOT TLPAREN expr TRPAREN
+  104 optexpr: . expr
+  105        | . %empty  [TRPAREN]
+
+    TIDENTIFIER  shift, and go to state 56
+    TNOT         shift, and go to state 52
+
+    $default  reduce using rule 105 (optexpr)
+
+    func_call  go to state 53
+    expr       go to state 65
+    optexpr    go to state 187
+
+
+State 179
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   49           | TWHILE TLPAREN expr TRPAREN TLBRACE $@7 . stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 188
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 180
+
+   20 $@3: . %empty
+   21 func_decl: TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE . $@3 stmts TRBRACE
+
+    $default  reduce using rule 20 ($@3)
+
+    $@3  go to state 189
+
+
+State 181
+
+   22 $@4: . %empty
+   23 func_decl: TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE . $@4 stmts TRBRACE
+
+    $default  reduce using rule 22 ($@4)
+
+    $@4  go to state 190
+
+
+State 182
+
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 . case_blocks TRBRACE
+   39 case_blocks: . case_stmt
+   40            | . case_blocks case_stmt
+   41 case_stmt: . TCASE TINTEGER TCOLON stmts TSEP
+   42          | . TCASE TINTEGER TCOLON TBREAK TSEP
+   43          | . TDEFAULT TCOLON stmts TSEP
+   44          | . TDEFAULT TCOLON TBREAK TSEP
+   45          | . TBREAK TSEP
+
+    TDEFAULT  shift, and go to state 191
+    TCASE     shift, and go to state 192
+    TBREAK    shift, and go to state 193
+
+    case_blocks  go to state 194
+    case_stmt    go to state 195
+
+
+State 183
+
+   53 if_else_cond: if_cond TELSE TLBRACE $@9 stmts TRBRACE .
+
+    $default  reduce using rule 53 (if_else_cond)
+
+
+State 184
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   51        | TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts . TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 196
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 185
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   17          | TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 . stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 197
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 186
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   19          | TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 . stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 198
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 187
+
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr . TRPAREN TLBRACE $@6 stmts TRBRACE
+
+    TRPAREN  shift, and go to state 199
+
+
+State 188
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   49           | TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts . TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 200
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 189
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   21          | TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 . stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 201
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 190
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   23          | TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 . stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 202
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 191
+
+   43 case_stmt: TDEFAULT . TCOLON stmts TSEP
+   44          | TDEFAULT . TCOLON TBREAK TSEP
+
+    TCOLON  shift, and go to state 203
+
+
+State 192
+
+   41 case_stmt: TCASE . TINTEGER TCOLON stmts TSEP
+   42          | TCASE . TINTEGER TCOLON TBREAK TSEP
+
+    TINTEGER  shift, and go to state 204
+
+
+State 193
+
+   45 case_stmt: TBREAK . TSEP
+
+    TSEP  shift, and go to state 205
+
+
+State 194
+
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks . TRBRACE
+   40 case_blocks: case_blocks . case_stmt
+   41 case_stmt: . TCASE TINTEGER TCOLON stmts TSEP
+   42          | . TCASE TINTEGER TCOLON TBREAK TSEP
+   43          | . TDEFAULT TCOLON stmts TSEP
+   44          | . TDEFAULT TCOLON TBREAK TSEP
+   45          | . TBREAK TSEP
+
+    TDEFAULT  shift, and go to state 191
+    TCASE     shift, and go to state 192
+    TBREAK    shift, and go to state 193
+    TRBRACE   shift, and go to state 206
+
+    case_stmt  go to state 207
+
+
+State 195
+
+   39 case_blocks: case_stmt .
+
+    $default  reduce using rule 39 (case_blocks)
+
+
+State 196
+
+   51 if_cond: TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE .
+
+    $default  reduce using rule 51 (if_cond)
+
+
+State 197
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   17          | TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts . TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 208
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 198
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   19          | TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts . TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 209
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 199
+
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN . TLBRACE $@6 stmts TRBRACE
+
+    TLBRACE  shift, and go to state 210
+
+
+State 200
+
+   49 while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE .
+
+    $default  reduce using rule 49 (while_loop)
+
+
+State 201
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   21          | TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts . TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 211
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 202
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   23          | TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts . TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 212
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 203
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   43 case_stmt: TDEFAULT TCOLON . stmts TSEP
+   44          | TDEFAULT TCOLON . TBREAK TSEP
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TBREAK       shift, and go to state 213
+
+    stmts             go to state 214
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 204
+
+   41 case_stmt: TCASE TINTEGER . TCOLON stmts TSEP
+   42          | TCASE TINTEGER . TCOLON TBREAK TSEP
+
+    TCOLON  shift, and go to state 215
+
+
+State 205
+
+   45 case_stmt: TBREAK TSEP .
+
+    $default  reduce using rule 45 (case_stmt)
+
+
+State 206
+
+   38 switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE .
+
+    $default  reduce using rule 38 (switch_statemnet)
+
+
+State 207
+
+   40 case_blocks: case_blocks case_stmt .
+
+    $default  reduce using rule 40 (case_blocks)
+
+
+State 208
+
+   17 func_decl: TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE .
+
+    $default  reduce using rule 17 (func_decl)
+
+
+State 209
+
+   19 func_decl: TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE .
+
+    $default  reduce using rule 19 (func_decl)
+
+
+State 210
+
+   46 $@6: . %empty
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE . $@6 stmts TRBRACE
+
+    $default  reduce using rule 46 ($@6)
+
+    $@6  go to state 216
+
+
+State 211
+
+   21 func_decl: TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE .
+
+    $default  reduce using rule 21 (func_decl)
+
+
+State 212
+
+   23 func_decl: TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE .
+
+    $default  reduce using rule 23 (func_decl)
+
+
+State 213
+
+   44 case_stmt: TDEFAULT TCOLON TBREAK . TSEP
+
+    TSEP  shift, and go to state 217
+
+
+State 214
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   43 case_stmt: TDEFAULT TCOLON stmts . TSEP
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TSEP         shift, and go to state 218
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 215
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   41 case_stmt: TCASE TINTEGER TCOLON . stmts TSEP
+   42          | TCASE TINTEGER TCOLON . TBREAK TSEP
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TBREAK       shift, and go to state 219
+
+    stmts             go to state 220
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 216
+
+    2 stmts: . stmt
+    3      | . stmts stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   47         | TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 . stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+
+    stmts             go to state 221
+    stmt              go to state 15
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 217
+
+   44 case_stmt: TDEFAULT TCOLON TBREAK TSEP .
+
+    $default  reduce using rule 44 (case_stmt)
+
+
+State 218
+
+   43 case_stmt: TDEFAULT TCOLON stmts TSEP .
+
+    $default  reduce using rule 43 (case_stmt)
+
+
+State 219
+
+   42 case_stmt: TCASE TINTEGER TCOLON TBREAK . TSEP
+
+    TSEP  shift, and go to state 222
+
+
+State 220
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   41 case_stmt: TCASE TINTEGER TCOLON stmts . TSEP
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TSEP         shift, and go to state 223
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 221
+
+    3 stmts: stmts . stmt
+    4 stmt: . var_decl TSEP
+    5     | . const_decl TSEP
+    6     | . assignment TSEP
+    7     | . if_cond
+    8     | . if_else_cond
+    9     | . while_loop
+   10     | . for_loop
+   11     | . switch_statemnet
+   12     | . func_decl
+   13     | . func_call
+   14     | . TPASS TSEP
+   15     | . error TSEP
+   17 func_decl: . TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@1 stmts TRBRACE
+   19          | . TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@2 stmts TRBRACE
+   21          | . TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@3 stmts TRBRACE
+   23          | . TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE $@4 stmts TRBRACE
+   33 func_call: . TIDENTIFIER TLPAREN call_args TRPAREN TSEP
+   38 switch_statemnet: . TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE $@5 case_blocks TRBRACE
+   47 for_loop: . TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE
+   47         | TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts . TRBRACE
+   49 while_loop: . TWHILE TLPAREN expr TRPAREN TLBRACE $@7 stmts TRBRACE
+   51 if_cond: . TIF TLPAREN expr TRPAREN TLBRACE $@8 stmts TRBRACE
+   53 if_else_cond: . if_cond TELSE TLBRACE $@9 stmts TRBRACE
+   54 const_decl: . TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic
+   55           | . TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING
+   56           | . TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr
+   57 var_decl: . TINTYPE TIDENTIFIER
+   58         | . TSTRINGTYPE TIDENTIFIER
+   59         | . TBOOLTYPE TIDENTIFIER
+  101 assignment: . TIDENTIFIER TEQUAL TSTRING
+  102           | . TIDENTIFIER TEQUAL expr
+  103           | . TIDENTIFIER TEQUAL arithmetic
+
+    error        shift, and go to state 1
+    TIDENTIFIER  shift, and go to state 2
+    TCONST       shift, and go to state 3
+    TIF          shift, and go to state 4
+    TINTYPE      shift, and go to state 5
+    TSTRINGTYPE  shift, and go to state 6
+    TFOR         shift, and go to state 7
+    TWHILE       shift, and go to state 8
+    TBOOLTYPE    shift, and go to state 9
+    TPASS        shift, and go to state 10
+    TVOID        shift, and go to state 11
+    TSWITCH      shift, and go to state 12
+    TRBRACE      shift, and go to state 224
+
+    stmt              go to state 42
+    func_decl         go to state 16
+    func_call         go to state 17
+    switch_statemnet  go to state 18
+    for_loop          go to state 19
+    while_loop        go to state 20
+    if_cond           go to state 21
+    if_else_cond      go to state 22
+    const_decl        go to state 23
+    var_decl          go to state 24
+    assignment        go to state 25
+
+
+State 222
+
+   42 case_stmt: TCASE TINTEGER TCOLON TBREAK TSEP .
+
+    $default  reduce using rule 42 (case_stmt)
+
+
+State 223
+
+   41 case_stmt: TCASE TINTEGER TCOLON stmts TSEP .
+
+    $default  reduce using rule 41 (case_stmt)
+
+
+State 224
+
+   47 for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE $@6 stmts TRBRACE .
+
+    $default  reduce using rule 47 (for_loop)

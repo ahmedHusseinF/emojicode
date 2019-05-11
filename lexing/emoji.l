@@ -1,5 +1,6 @@
 %{
 #include <string>
+#include <string.h>
 #include "emoji.h"
 #define TOKEN(t) (yylval.token = t)        // save numeric token value in token for bison
 extern "C" int yywrap() { return 1; }
@@ -28,8 +29,8 @@ extern "C" int yywrap() { return 1; }
 "👌"                      return TOKEN(TBOOLTYPE);
 "👍"                      return TOKEN(TTRUE);
 "👎"                      return TOKEN(TFALSE);
-\"([^\\\"]|\\.)*\"        {yylval.str = yytext; return TSTRING;}
-[a-zA-Z_$][a-zA-Z0-9_$]*  {yylval.str = yytext; return TIDENTIFIER;}
+\"([^\\\"]|\\.)*\"        {yylval.str = strdup(yytext); return TSTRING;}
+[a-zA-Z_$][a-zA-Z0-9_$]*  {yylval.str = strdup(yytext); return TIDENTIFIER;}
 [0-9]+.[0-9]+             {yylval.floaty = atof(yytext); return TFLOAT;}
 [0-9]+                    {yylval.token = atof(yytext); return TINTEGER;}
 "=="                      return TOKEN(TCEQ);

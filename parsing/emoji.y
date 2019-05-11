@@ -8,18 +8,13 @@
     #include <utility>
     #include <typeinfo>
 
-    #include "../parsing/symbol.h"
+    #include "../parsing/symTable.hpp"
     using namespace std;
 
-    OPERATION_RETURN insert(int type, char* name, bool isConstant, Values value, Scope *currentTable);
-    Scope *lookUp(char *name, Scope *currentTable);
-    OPERATION_RETURN update(char *name, int newType, Values value, Scope *currentTable);
-
-    void handle_error(OPERATION_RETURN ret);
-
-    Scope* mainScope = nullptr;
-    Scope* currentScope = nullptr;
-
+    SymbolTable* st;
+    int currScope = 0; // the unique
+    int depth = 0;
+    void handle_error(Status ret);
 
     extern int yylex();
     extern int yylineno;
@@ -93,12 +88,21 @@ stmt: var_decl TSEP
     | error TSEP
     ;
 
-func_decl: var_type TIDENTIFIER TLPAREN args TRPAREN TLBRACE stmts TRBRACE
+func_decl: TINTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
+         | TSTRINGTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
+         | TBOOLTYPE TIDENTIFIER TLPAREN args TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
+         | TVOID TIDENTIFIER TLPAREN args TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
          ;
 
 args: %empty
-    | var_type
-    | args TCOMMA var_type
+    | TINTYPE
+    | TSTRINGTYPE
+    | TBOOLTYPE
+    | TVOID
+    | args TCOMMA TINTYPE
+    | args TCOMMA TSTRINGTYPE
+    | args TCOMMA TBOOLTYPE
+    | args TCOMMA TVOID
     ;
 
 func_call: TIDENTIFIER TLPAREN call_args TRPAREN TSEP
@@ -109,13 +113,13 @@ call_args: %empty
          | call_args TCOMMA expr
          ;
 
-var_type: TINTYPE
+/* var_type: TINTYPE
         | TSTRINGTYPE
         | TBOOLTYPE
         | TVOID
-        ;
+        ; */
 
-switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE case_blocks TRBRACE
+switch_statemnet: TSWITCH TLPAREN TIDENTIFIER TRPAREN TLBRACE {depth++;currScope++;} case_blocks TRBRACE {depth--;currScope++;}
                 ;
 
 case_blocks: case_stmt
@@ -130,28 +134,27 @@ case_stmt: TCASE TINTEGER TCOLON stmts TSEP
          ;
 
 /* handle breaks inside loops */
-for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE stmts TRBRACE
+for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
         ;
 
-while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE stmts TRBRACE
+while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
           ;
 
-if_cond: TIF TLPAREN expr TRPAREN TLBRACE stmts TRBRACE
+if_cond: TIF TLPAREN expr TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
        ;
 
-if_else_cond: if_cond TELSE TLBRACE stmts TRBRACE
+if_else_cond: if_cond TELSE TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
             ;
 
-const_decl: TCONST TINTYPE TIDENTIFIER
-          | TCONST TSTRINGTYPE TIDENTIFIER
-          | TCONST TBOOLTYPE TIDENTIFIER
+const_decl: TCONST TINTYPE TIDENTIFIER TEQUAL arithmetic        {Values val; val.Number=$5;handle_error(st->insert($3, currScope, depth, Types::INT, val, true));}
+          | TCONST TSTRINGTYPE TIDENTIFIER TEQUAL TSTRING       {Values val; val.str=$5;handle_error(st->insert($3, currScope, depth, Types::STRING, val, true));}
+          | TCONST TBOOLTYPE TIDENTIFIER TEQUAL expr            {Values val; val.Number=$5;handle_error(st->insert($3, currScope, depth, Types::BOOLEAN, val, true));}
           ;
 
-var_decl: TINTYPE TIDENTIFIER           {Values val; val.Number=0;handle_error(insert(INT, $2, false, val, currentScope));}
-        | TSTRINGTYPE TIDENTIFIER       {Values val; val.str="";handle_error(insert(STRING, $2, false, val, currentScope));}
-        | TBOOLTYPE TIDENTIFIER         {Values val; val.Number=0;handle_error(insert(BOOLEAN, $2, false, val, currentScope));}
+var_decl: TINTYPE TIDENTIFIER                                   {Values val; val.Number=0;handle_error(st->insert($2, currScope, depth, Types::INT, val, false));}
+        | TSTRINGTYPE TIDENTIFIER                               {Values val; val.str=strdup("");handle_error(st->insert($2, currScope, depth, Types::STRING, val, false));}
+        | TBOOLTYPE TIDENTIFIER                                 {Values val; val.Number=0;handle_error(st->insert($2, currScope, depth, Types::BOOLEAN, val, false));}
         ;
-
 
 /* values: TINTEGER
       | TTRUE
@@ -159,15 +162,32 @@ var_decl: TINTYPE TIDENTIFIER           {Values val; val.Number=0;handle_error(i
       | TSTRING
       ; */
 
-expr: expr TCEQ expr
-    | expr TCNE expr
-    | expr TCLT expr
-    | expr TCLE expr
-    | expr TCGT expr
-    | expr TCGE expr
-    | expr TAND expr
-    | expr TOR expr
+expr: TIDENTIFIER TCEQ TINTEGER
+    | TIDENTIFIER TCNE TINTEGER
+    | TIDENTIFIER TCLT TINTEGER
+    | TIDENTIFIER TCLE TINTEGER
+    | TIDENTIFIER TCGT TINTEGER
+    | TIDENTIFIER TCGE TINTEGER
+    | TIDENTIFIER TAND TINTEGER
+    | TIDENTIFIER TOR TINTEGER
+    | TIDENTIFIER TCEQ expr
+    | TIDENTIFIER TCNE expr
+    | TIDENTIFIER TCLT expr
+    | TIDENTIFIER TCLE expr
+    | TIDENTIFIER TCGT expr
+    | TIDENTIFIER TCGE expr
+    | TIDENTIFIER TAND expr
+    | TIDENTIFIER TOR expr
+    | expr TCEQ TIDENTIFIER
+    | expr TCNE TIDENTIFIER
+    | expr TCLT TIDENTIFIER
+    | expr TCLE TIDENTIFIER
+    | expr TCGT TIDENTIFIER
+    | expr TCGE TIDENTIFIER
+    | expr TAND TIDENTIFIER
+    | expr TOR TIDENTIFIER
     | func_call
+    /* | arithmetic */
     | TNOT TLPAREN expr TRPAREN
     ;
 
@@ -188,11 +208,10 @@ arithmetic: TIDENTIFIER TPLUS arithmetic
           | TIDENTIFIER
           ;
 
-assignment: TIDENTIFIER TEQUAL TSTRING          {Values val; val.str = $3; update($1, STRING, val, currentScope);}
-          | TIDENTIFIER TEQUAL expr             {Values val; val.Number = $3 ? 1 : 0; update($1, BOOLEAN, val, currentScope);}
-          | TIDENTIFIER TEQUAL arithmetic       {Values val; val.Number = $3; update($1, INT, val, currentScope);}
+assignment: TIDENTIFIER TEQUAL TSTRING          {Values val; val.str = $3; handle_error(st->modify($1, Types::STRING, val, depth));}
+          | TIDENTIFIER TEQUAL expr             {Values val; val.Number = $3 ? 1 : 0; handle_error(st->modify($1, Types::BOOLEAN, val, depth));}
+          | TIDENTIFIER TEQUAL arithmetic       {cout<<"in int ass";Values val; val.Number = $3; handle_error(st->modify($1, Types::INT, val, depth));}
           ;
-
 
 optexpr: expr
        | %empty
@@ -200,90 +219,8 @@ optexpr: expr
 
 %%
 
-OPERATION_RETURN insert(int type, char* name, bool isConstant, Values value, Scope *currentTable)
-{
-    cout << name<<endl;
-    // first check for duplication
-    unordered_map<char *, Symbol>::iterator itr = currentTable->currentLockup.find(name);
-
-    if (itr == currentTable->currentLockup.end())
-    {
-        
-            Symbol*s = new Symbol();
-            s->type = type;
-            s->isConst = isConstant;
-            s->value = value;
-            pair <char*,Symbol> newP;
-            // cout<<"HI";
-            newP=make_pair(name,*s);
-            currentTable->currentLockup.insert(newP);
-            //currentTable->currentLockup[name]=move(s);
-
-			Scope *Dum =  lookUp(name, currentTable);
-			itr = currentTable->currentLockup.find(name);
-			// cout<<"HI";
-			cout<<"name:"<<name<<" | value:"<<itr->second.value.Number<<endl;
-            return SUCCESSFUL_INSERTION;
-        
-    }
-	//TEST ONLY
-	
-    return DUPLICATE_INSERTION;
-}
-
-Scope *lookUp(char *name, Scope *currentTable)
-{
-
-    // base case: not found in alllllll scopes: 2o7a
-    if (currentTable == NULL)
-        return NULL;
-
-    if (currentTable->currentLockup.find(name) == currentTable->currentLockup.end())
-    {
-        return lookUp(name, currentTable->above);
-    }
-    return currentTable;
-}
-
-OPERATION_RETURN update(char *name, int newType, Values value, Scope *currentTable)
-{
-    cout<<name<<endl;
-    Scope *currTable = lookUp(name, currentTable);
-
-    if (currTable != NULL)
-    {
-        cout << "going to update"<<endl;
-        unordered_map<char *, Symbol>::iterator itr = currentTable->currentLockup.find(name); //madaam mesh b null yeb2a wesh la2ah
-        // check semantics errors:
-        if (itr->second.isConst)
-        {
-            return SEMANTIC_ERROR_ATTEMPT_CHANGING_CONSTANT;
-        }
-        if (newType == itr->second.type)
-        {
-            itr->second.value = value;
-            return SUCCESSFUL_UPDATE;
-        }
-        return SEMANTIC_ERROR_TYPE_INCOMPATIBLE;
-    }
-    return SYMBOL_NOT_FOUND;
-}
-
-Scope *createMainScope()
-{
-    Scope *mainScope = new Scope();
-    mainScope->above = nullptr;
-    return mainScope;
-}
-
-void print_table(Scope* scope) {
-    for(const auto& p : scope->currentLockup) {
-      cout << p.first;
-    }
-}
-
-void handle_error(OPERATION_RETURN ret) {
-    switch(ret){
+void handle_error(Status ret) {
+    switch(ret) {
         case SYMBOL_NOT_FOUND:
             cerr << "Symbol not found"<<endl;
         break;
@@ -305,19 +242,21 @@ void handle_error(OPERATION_RETURN ret) {
         case SEMANTIC_ERROR_ATTEMPT_CHANGING_CONSTANT:
             cerr << "Can't change a constant"<<endl;
         break;
+        default:
+            cout<<"Weird: "<<ret<<endl;
+        break;
     }
 }
 
-int main (void) {
-	
-	mainScope = createMainScope();
-	currentScope = mainScope;
+int main(void) {
 
-	cout << currentScope << endl;
+    st = new SymbolTable();
 
-    int ret = yyparse();
+    yyparse();
 
-    //print_table(mainScope);
+    st->print();
 
-	return ret;
+    delete st;
+
+    return 0;
 }

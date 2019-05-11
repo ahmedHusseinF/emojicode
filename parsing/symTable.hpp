@@ -1,27 +1,67 @@
+#include <string.h>
+#include <algorithm>
+#include <cctype>
 #include <iostream>
+#include <locale>
 using namespace std;
 
-const int MAX = 100;
+const int MAX = 500;
+
+typedef union valueType {
+  int Number;
+  char* str;
+} Values;
+
+enum Status {
+  SUCCESSFUL_INSERTION,
+  DUPLICATE_INSERTION,
+  FAILED_TO_INSERTION,
+
+  SUCCESSFUL_UPDATE,
+  SYMBOL_NOT_FOUND,
+  SEMANTIC_ERROR_TYPE_INCOMPATIBLE,
+  SEMANTIC_ERROR_ATTEMPT_CHANGING_CONSTANT,
+
+  SUCCESSFUL_DELETE,
+  FAILED_TO_DELETE,
+  FAILED_TO_UPDATE,
+};
+
+enum Types { INT, STRING, BOOLEAN };
 
 class Node {
-  string identifier, scope, type;
-  int lineNo;
+  string identifier;
+  int scope;  // unique
+  int depth;
+  Types type;
+  bool isConst;
+  Values val;
   Node* next;
 
  public:
-  Node() { next = NULL; }
+  Node() { next = nullptr; }
 
-  Node(string key, string value, string type, int lineNo) {
+  Node(string key, int scope, int depth, Types type, Values val, bool isConst) {
     this->identifier = key;
-    this->scope = value;
+    this->scope = scope;
     this->type = type;
-    this->lineNo = lineNo;
-    next = NULL;
+    this->depth = depth;
+    this->val = val;
+    this->isConst = isConst;
+    next = nullptr;
   }
 
   void print() {
-    cout << "Identifier's Name:" << identifier << "\nType:" << type
-         << "\nScope: " << scope << "\nLine Number: " << lineNo << endl;
+    cout << identifier << '\t' << type << '\t' << scope << '\t' << depth
+         << '\t';
+
+    if (type == Types::STRING) {
+      cout << val.str;
+    } else {
+      cout << val.Number;
+    }
+
+    cout << endl;
   }
 
   friend class SymbolTable;
@@ -32,15 +72,21 @@ class SymbolTable {
 
  public:
   SymbolTable() {
-    for (int i = 0; i < MAX; i++) head[i] = NULL;
+    for (int i = 0; i < MAX; i++) head[i] = nullptr;
   }
 
   int hashf(string id);  // hash function
-  bool insert(string id, string scope, string Type, int lineno);
+  Status insert(string id, int scope, int depth, Types Type, Values val, bool);
 
-  string find(string id);
+  Node* find(string id);
 
-  bool deleteRecord(string id);
+  int getInt(string id, int depth);
+  bool getBool(string id, int depth);
+  char* getString(string id, int depth);
 
-  bool modify(string id, string scope, string Type, int lineno);
+  Status deleteRecord(string id);
+
+  Status modify(string id, Types Type, Values val, int scope);
+
+  void print();
 };
