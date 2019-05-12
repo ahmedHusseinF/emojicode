@@ -28,6 +28,7 @@
     void body_for ();
     void end_for ();
     void array_assign ();
+    void print_array(char*);
     int label_number=0;
     string stack_for_quadruples[500];
     int label[50];
@@ -102,6 +103,7 @@ stmts: stmt
 stmt: var_decl TSEP
     | const_decl TSEP
     | assignment TSEP
+    | arithmetic TSEP
     | if_cond
     | if_else_cond
     | while_loop
@@ -159,7 +161,7 @@ case_stmt: TCASE TINTEGER TCOLON stmts TSEP
          ;
 
 /* handle breaks inside loops */
-for_loop: TFOR TLPAREN optexpr TSEP optexpr TSEP optexpr TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
+for_loop: TFOR TLPAREN optexpr {cond_for();} TSEP optexpr{loop_for();} TSEP optexpr{body_for();} TRPAREN TLBRACE {end_for();} { depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
         ;
 
 while_loop: TWHILE TLPAREN expr TRPAREN TLBRACE {depth++;currScope++;} stmts TRBRACE {depth--;currScope++;}
@@ -216,33 +218,38 @@ expr: TIDENTIFIER  TCEQ TINTEGER {push($1); stack_for_quadruples[++top] = "=="; 
     | TNOT  TLPAREN expr TRPAREN {stack_for_quadruples[++top] = "!";code_generate();}
     ;
 
-arithmetic: TIDENTIFIER  TPLUS {push($1);stack_for_quadruples[++top] = "+";} arithmetic
-          | TIDENTIFIER  TMINUS {push($1);stack_for_quadruples[++top] = "-";} arithmetic
-          | TIDENTIFIER  TMUL {push($1);stack_for_quadruples[++top] = "*";} arithmetic
-          | TIDENTIFIER  TDIV {push($1);stack_for_quadruples[++top] = "/";} arithmetic
-          | TINTEGER  TPLUS {push(to_string($1));stack_for_quadruples[++top] = "+";} arithmetic
-          | TINTEGER  TMINUS {push(to_string($1));stack_for_quadruples[++top] = "-";} arithmetic
-          | TINTEGER  TMUL {push(to_string($1));stack_for_quadruples[++top] = "*";} arithmetic
-          | TINTEGER  TDIV {push(to_string($1));stack_for_quadruples[++top] = "/";} arithmetic
+arithmetic: TIDENTIFIER  TPLUS {push($1);stack_for_quadruples[++top] = "+"; code_generate();} arithmetic
+          | TIDENTIFIER  TMINUS {push($1);stack_for_quadruples[++top] = "-"; code_generate();} arithmetic
+          | TIDENTIFIER  TMUL {push($1);stack_for_quadruples[++top] = "*"; code_generate();} arithmetic
+          | TIDENTIFIER  TDIV {push($1);stack_for_quadruples[++top] = "/"; code_generate();} arithmetic
+          | TINTEGER  TPLUS {push(to_string($1));stack_for_quadruples[++top] = "+"; code_generate();} arithmetic
+          | TINTEGER  TMINUS {push(to_string($1));stack_for_quadruples[++top] = "-"; code_generate();} arithmetic
+          | TINTEGER  TMUL {push(to_string($1));stack_for_quadruples[++top] = "*"; code_generate();} arithmetic
+          | TINTEGER  TDIV {push(to_string($1));stack_for_quadruples[++top] = "/"; code_generate();} arithmetic
           | TLPAREN arithmetic TRPAREN
-          | TMINUS TINTEGER {stack_for_quadruples[++top] = "-";push(to_string($2));} 
-          | TMINUS TIDENTIFIER {stack_for_quadruples[++top] = "-"; push($2);;}
-          | TIDENTIFIER TINC {push($1); stack_for_quadruples[++top] = "++";;}
-          | TIDENTIFIER TDEC {push($1);stack_for_quadruples[++top] = "--";;}
+          | TMINUS TINTEGER {stack_for_quadruples[++top] = "-";push(to_string($2)); code_generate();} 
+          | TMINUS TIDENTIFIER {stack_for_quadruples[++top] = "-"; push($2); code_generate();}
+          | TIDENTIFIER TINC { stack_for_quadruples[++top] = "++"; push($1); code_generate();}
+          | TIDENTIFIER TDEC {stack_for_quadruples[++top] = "--";push($1); code_generate();}
           | TINTEGER {push(to_string($1));  /* gen_assign(); */ }
           | TIDENTIFIER{push($1);}
           ;
 
 assignment: TIDENTIFIER TEQUAL TSTRING {push($3);  stack_for_quadruples[++top] = "="; push($1);  gen_assign();        Values val; val.str = $3; handle_error(st->modify($1, Types::STRING, val, depth));}
           | TIDENTIFIER TEQUAL expr   { stack_for_quadruples[++top] = "=";push($1); Values val; val.Number = $3 ? 1 : 0; handle_error(st->modify($1, Types::BOOLEAN, val, depth));}
-          | TIDENTIFIER TEQUAL arithmetic { stack_for_quadruples[++top] = "="; push($1);gen_assign();Values val; val.Number = $3; handle_error(st->modify($1, Types::INT, val, depth));}
+          | TIDENTIFIER TEQUAL arithmetic { stack_for_quadruples[++top] = "="; push($1);Values val; val.Number = $3; handle_error(st->modify($1, Types::INT, val, depth));}
           ;
 
 optexpr: expr
+       | assignment
        | %empty
        ;
 
 %%
+
+// ystaaaaaaaaaaaa
+// ana zbt el increment b eny bdlt el order bta3 el push w sh8al bs t2rebn mkano 8lt 
+// test 7agat tanya w lma t5ls PUSH PUSH PUSH ana da5l anam
 
 void handle_error(Status ret) {
     switch(ret) {
@@ -272,10 +279,10 @@ void handle_error(Status ret) {
         break;
     }
 }
+
 // for quadruples
 void push(string a)
 {
-    std::cout<<"pushed"<<endl;
     stack_for_quadruples[++top] = a;
 }
 void gen_assign()
@@ -290,96 +297,96 @@ void code_generate()
     string variable1 = stack_for_quadruples[top-2];
     string operand = stack_for_quadruples[top-1];
     string variable2 = stack_for_quadruples[top];
-    temp[2] = (char)temp_reg_count;
-    
+    temp[1] = (char)(temp_reg_count+'0');
+    // cout<<operand<<endl;
     if (operand == "+")
     {
-        std::cout<<"ADD"<< " "<<temp << " " <<variable1<<" , "<<variable2<<endl;
+        std::cout<<"ADD"<< " "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         top-=2;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "-")
     {
-        std::cout<<"SUB"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout<<"SUB "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "*")
     {
-        std::cout<<"MUL"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout<<"MUL "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "/")
     {
-        std::cout<<"DIV"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout<<"DIV "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "==" )
     {
-        std::cout <<"SEQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"SEQ "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "!=")
     {
-        std::cout <<"SNQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"SNQ"; print_array(temp); std::cout<< "  ," <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "<")
     {
-        std::cout <<"SLT"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"SLT "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "<=")
     {
-        std::cout <<"SLQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"SLQ"; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == ">")
     {
-        std::cout <<"GRT"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"GRT "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == ">=")
     {
-        std::cout <<"GRQ"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"GRQ"; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "&&")
     {
-        std::cout <<"AND"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"AND "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "||")
     {
-        std::cout <<"OR"<< " "<<temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"OR "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "!")
     {
-        std::cout <<"NOT" << " " << temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"NOT "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "++")
     {
-        std::cout <<"INC" << " " << temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"INC "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
     else if (operand == "--")
     {
-        std::cout <<"DEC" << " " << temp<< " " <<variable1<<" , "<<variable2<<endl;
+        std::cout <<"DEC "; print_array(temp); std::cout<< " , " <<variable1<<" , "<<variable2<<endl;
         stack_for_quadruples[top] = temp;
         temp_reg_count++;
     }
@@ -388,9 +395,9 @@ void code_generate()
 void cond_if ()
 {
     label_number++;
-    temp[1] = (char)temp_reg_count;
-    std::cout<<"NOT"<<" "<<temp<<" "<<stack_for_quadruples[top]<<endl;
-    std::cout<<"IF"<<" "<<temp<<" "<<"goto Label"<<" "<<label_number<<endl;
+    temp[1] = (char)(temp_reg_count+'0');
+    std::cout<<"NOT"<<" ";print_array(temp);std::cout<<" , "<<stack_for_quadruples[top]<<endl;
+    std::cout<<"IF"<<" ";print_array(temp);std::cout<<" "<<"goto Label"<<" "<<label_number<<endl;
     temp_reg_count++;
     label[++label_top] = label_number; 
 }
@@ -398,25 +405,25 @@ void body_if ()
 {
     label_number++;
     std::cout<<"goto "<<label_number<<endl;
-    std::cout<<"Label: "<<label[label_top--]<<endl;
+    std::cout<<"Label "<<label[label_top--]<<":"<<endl;
     label[++label_top] = label_number;
 }
 void else_if ()
 {
-    std::cout<<"Label: "<<label[label_top--];
+    std::cout<<"Label "<<label[label_top--]<<":"<<endl;;
 }
 void start_while ()
 {
     label_number++;
     label[++label_top] = label_number;
-    std::cout<<"Label: "<<label_number;
+    std::cout<<"Label "<<label_number<<":"<<endl;
 }
 void body_while ()
 {
     label_number++;
-    temp[1] = (char)temp_reg_count;
-    std::cout<<"NOT "<<temp<<" , "<<stack_for_quadruples[top--]<<endl;
-    std::cout<<"IF "<<temp<<" goto Label"<<label_number<<endl;
+    temp[1] = (char)(temp_reg_count+'0');
+    std::cout<<"NOT ";print_array(temp);std::cout<<" , "<<stack_for_quadruples[top--]<<endl;
+    std::cout<<"IF ";print_array(temp);std::cout<<" goto Label"<<label_number<<endl;
     temp_reg_count++;
     label[++label_top] = label_number;
 }
@@ -424,46 +431,46 @@ void end_while ()
 {
     int dumy = label[label_top--];
     std::cout<<"goto Label"<<label[label_top--]<<endl;;
-    std::cout<<"Label: "<<dumy<<endl;
+    std::cout<<"Label "<<dumy << ":"<<endl;
 }
 void cond_for ()
 {
     label_number++;
     label[++label_top] = label_number;
-    std::cout<<"Label: "<<label_number<<endl;
+    std::cout<<"Label "<<label_number<<":"<<endl;
 }
 void loop_for ()
 {
     label_number++;
-    temp[1] = (char)temp_reg_count;
-    std::cout<<"NOT "<<temp<<" , "<<stack_for_quadruples[top--]<<endl;
-    std::cout<<"IF "<<temp<<" goto Label"<<label_number<<endl;
+    temp[1] = (char)(temp_reg_count+'0');
+    std::cout<<"NOT ";print_array(temp);std::cout<<" , "<<stack_for_quadruples[top--]<<endl;
+    std::cout<<"IF ";print_array(temp);std::cout<<" goto Label"<<label_number<<endl;
     temp_reg_count++;
     label[++label_top] = label_number++;
     std::cout<<"goto Label"<<label_number<<endl;
     label[++label_top] = label_number++;
-    std::cout<<"goto Label"<<label_number<<endl;
+    std::cout<<"Label"<<label_number<<":"<<endl;
     label[++label_top] = label_number; 
 }
 void body_for ()
 {
     std::cout<<"goto Label"<<label[label_top-3]<<endl;
-    std::cout<<"Label: "<<label[label_top-1]<<endl;
+    std::cout<<"Label "<<label[label_top-1]<<":"<<endl;
 }
 void end_for ()
 {
     std::cout<<"goto Label"<<label[label_top]<<endl;
-    std::cout<<"Label: "<<label[label_top-2]<<endl;
+    std::cout<<"Label "<<label[label_top-2] <<":" <<endl;
     label_top-=4;
 }
 void array_assign ()
 {
-    temp[1] = (char)temp_reg_count;
-    std::cout<<"MOV "<<temp<<" , "<<stack_for_quadruples[top]<<endl;
+    temp[1] = (char)(temp_reg_count+'0');
+    std::cout<<"MOV ";print_array(temp);std::cout<<" , "<<stack_for_quadruples[top]<<endl;
     stack_for_quadruples[top] = temp;
     temp_reg_count++;
-    temp[1] = (char)temp_reg_count;
-    std::cout<<"MOV "<<temp<<" , "<<stack_for_quadruples[top-1]<<"["<<stack_for_quadruples[top]<<"]"<<endl;
+    temp[1] = (char)(temp_reg_count+'0');
+    std::cout<<"MOV ";print_array(temp);std::cout<<" , "<<stack_for_quadruples[top-1]<<"["<<stack_for_quadruples[top]<<"]"<<endl;
     top--;
     stack_for_quadruples[top] = temp;
     temp_reg_count++;
@@ -480,4 +487,12 @@ int main(void) {
     delete st;
 
     return 0;
+}
+
+void print_array(char* temp)
+{
+    for(int i=0 ; i < 2 ; i++)
+    {   
+        cout << temp[i];
+    }
 }
